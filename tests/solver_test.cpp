@@ -1,5 +1,5 @@
-#include "../physics/object.hpp"
-#include "../physics/solver.hpp"
+#include "../src/physics/object.hpp"
+#include "../src/physics/solver.hpp"
 #include <arm_neon.h>
 #include <iostream>
 
