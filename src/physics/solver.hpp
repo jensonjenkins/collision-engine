@@ -16,13 +16,7 @@ private:
 public:
     physics_solver() {}
     
-    void add_object(object<T, VT>* obj) { 
-        // _objects.push_back(obj); 
-        std::cout<<"mass: "<<obj->mass;
-        std::cout<<"    x_i: "<<obj->position.i()<<"    x_j: "<<obj->position.j();
-        std::cout<<"    v_i: "<<obj->velocity.i()<<"    v_j: "<<obj->velocity.j();
-        std::cout<<"    f_i: "<<obj->force.j()<<"    f_j: "<<obj->force.j()<<std::endl;
-    }
+    void add_object(object<T, VT> *obj) { _objects.push_back(obj); }
     void remove_object(object<T, VT>* object) {}
 
     void step(T dt) {
@@ -30,14 +24,12 @@ public:
             obj->force += _gravity * obj->mass;
             obj->velocity += obj->force / obj->mass * dt;
             obj->position += obj->velocity * dt;
+
+            std::cout<<"f_i: "<<obj->force.i()<<"    f_j: "<<obj->force.j();
+            std::cout<<"    v_i: "<<obj->velocity.i()<<"    v_j: "<<obj->velocity.j();
+            std::cout<<"    x_i: "<<obj->position.i()<<"    x_j: "<<obj->position.j()<<std::endl;
+
             obj->force.set_all(0);
-
-            // std::cout<<"mass: "<<obj->mass;
-            // std::cout<<"    g_i: "<<_gravity.i()<<"    g_j: "<<_gravity.j();
-            // std::cout<<"    x_i: "<<obj->position.i()<<"    x_j: "<<obj->position.j();
-            // std::cout<<"    v_i: "<<obj->velocity.i()<<"    v_j: "<<obj->velocity.j();
-            // std::cout<<"    f_i: "<<obj->force.j()<<"    f_j: "<<obj->force.j()<<std::endl;
-
         }
     }
 

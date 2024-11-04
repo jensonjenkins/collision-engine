@@ -18,7 +18,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Add all .cpp files in src/ directory to the build
 file(GLOB_RECURSE SOURCE_FILES "src/main.cpp")
-file(GLOB_RECURSE TEST_FILES "src/tests/*.cpp")
+file(GLOB_RECURSE TEST_FILES "tests/*.cpp")
 
 # Create the executable target
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

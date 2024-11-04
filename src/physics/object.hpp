@@ -1,6 +1,7 @@
 #pragma once
 
 #include "arm_neon.h"
+#include <iostream>
 
 /**
  * Wrapper class for float32x2_t and float64x2_t represented as 2D vectors 
@@ -48,7 +49,7 @@ struct vec2<float32_t> {
     friend bool operator==(const vec2& a, const vec2& b) { return a.i() == b.i() && a.j() == b.j(); }
     friend bool operator!=(const vec2& a, const vec2& b) { return !(a == b); }
 
-} __attribute__((aligned(64)));
+}; 
 
 template <typename T>
 struct vec_traits;
@@ -68,22 +69,17 @@ struct object {
     VT  position;
     VT  velocity;
     VT  force;
-};
+} __attribute__((aligned(32)));
 
 /**
  * @tparam T floating point type (e.g. float32_t, float64_t, etc.) 
  */
 template <typename T>
 struct object2d : public object<T, vec2<T>> {
-    T       mass;
-    vec2<T> position;
-    vec2<T> velocity;
-    vec2<T> force;
-
     object2d() = default;
-};
+} __attribute__((aligned(32)));
 
 template <typename T>
-struct circle2d : public object2d<T> {};
+struct circle2d : public object2d<T> {} __attribute__((aligned(32)));
 
 
