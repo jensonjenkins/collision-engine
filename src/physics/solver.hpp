@@ -1,7 +1,6 @@
 #pragma once
 
 #include "object.hpp"
-#include <iostream>
 #include <vector>
 
 /**
@@ -9,26 +8,23 @@
  * @tparam TV   vector wrapper defined in object.hpp (e.g. vec2, vec3)
  */
 template <typename T, typename VT>
-class physics_solver {
+class environment {
 private:
-    static_assert(std::is_same_v<T, typename vec_traits<VT>::type>, 
+    static_assert(std::is_same_v<T, typename vec_traits<VT>::element_type>, 
             "both numeric primitive types passed must match.");
 public:
-    physics_solver() {}
+    environment() {}
     
     void add_object(object<T, VT> *obj) { _objects.push_back(obj); }
     void remove_object(object<T, VT>* object) {}
+    
+    const std::vector<object<T, VT>*>& objects() const noexcept { return _objects; }
 
     void step(T dt) {
         for (object<T, VT>* obj : _objects) {
             obj->force += _gravity * obj->mass;
             obj->velocity += obj->force / obj->mass * dt;
             obj->position += obj->velocity * dt;
-
-            std::cout<<"f_i: "<<obj->force.i()<<"    f_j: "<<obj->force.j();
-            std::cout<<"    v_i: "<<obj->velocity.i()<<"    v_j: "<<obj->velocity.j();
-            std::cout<<"    x_i: "<<obj->position.i()<<"    x_j: "<<obj->position.j()<<std::endl;
-
             obj->force.set_all(0);
         }
     }
