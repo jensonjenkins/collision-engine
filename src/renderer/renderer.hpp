@@ -4,6 +4,7 @@
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/WindowStyle.hpp"
+#include <SFML/Window/Event.hpp>
 
 /**
  * @tparam T    numeric primitive type (e.g. float32_t, float64_t, etc.)
@@ -12,9 +13,12 @@
 template <typename T, typename VT>
 class renderer {
 public:
+    static constexpr size_t window_width = 1280;
+    static constexpr size_t window_height = 720;
     explicit renderer(environment<T, VT>& env) 
         : _env(env)
-        , _window(sf::VideoMode(1280, 720), "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
+        , _window(sf::VideoMode(window_width, window_height), 
+                "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
     
     /**
      * Populate the frame with objects
@@ -43,7 +47,25 @@ public:
             _frame_objects[i].setPosition(obj->position.i(), obj->position.j());
         }
     }
-    
+   
+    bool is_running() {
+        return _window.isOpen();
+    }
+
+    bool run() {
+        sf::Event event;
+        while(_window.pollEvent(event)){
+            switch (event.type) {
+            case sf::Event::Closed:
+                _window.close();
+                break;
+            default:
+                break;
+            }
+        }
+        return is_running();
+    }
+
     /**
      * Show image to the viewport
      */

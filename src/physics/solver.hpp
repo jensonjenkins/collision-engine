@@ -19,17 +19,20 @@ public:
     void remove_object(object<T, VT>* object) {}
     
     const std::vector<object<T, VT>*>& objects() const noexcept { return _objects; }
-
+    
     void step(T dt) {
+        vec2<T> next_pos;
         for (object<T, VT>* obj : _objects) {
             obj->force += _gravity * obj->mass;
             obj->velocity += obj->force / obj->mass * dt;
             obj->position += obj->velocity * dt;
+
             obj->force.set_all(0);
         }
     }
 
+
 private:
-    const VT                    _gravity{0, -9.81f};
+    const VT                    _gravity{0, 9.81f};
     std::vector<object<T, VT>*> _objects;
 };

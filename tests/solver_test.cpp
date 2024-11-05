@@ -27,9 +27,11 @@ void step_function_test() {
 }
 
 int main() { 
-    std::cout<<"Running env_test.cpp..."<<std::endl;
+    std::cout<<"Running solver_test.cpp..."<<std::endl;
 
     step_function_test();
+
+    std::cout<<"solver_test - ok."<<std::endl;
 
     return 0;
 }

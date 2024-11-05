@@ -14,6 +14,8 @@ struct vec2<float32_t> {
 
     float32_t i() const noexcept { return vget_lane_f32(data, 0); }
     float32_t j() const noexcept { return vget_lane_f32(data, 1); }
+    void set_i(float32_t i) noexcept { data = vset_lane_f32(i, data, 0); }
+    void set_j(float32_t j) noexcept { data = vset_lane_f32(j, data, 1); }
    
     vec2() = default;
     explicit vec2(float32x2_t data) : data(data) {} 
