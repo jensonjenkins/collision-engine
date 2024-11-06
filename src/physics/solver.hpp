@@ -5,7 +5,7 @@
 
 /**
  * @tparam T    numeric primitive type (e.g. float32_t, float64_t, etc.)
- * @tparam TV   vector wrapper defined in object.hpp (e.g. vec2, vec3)
+ * @tparam TV   vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
 template <typename T, typename VT>
 class environment {
@@ -15,18 +15,21 @@ private:
 public:
     environment() {}
     
-    void add_object(object<T, VT> *obj) { _objects.push_back(obj); }
-    void remove_object(object<T, VT>* object) {}
+    void add_particle(particle<T, VT> *obj) { _particles.push_back(obj); }
+    void remove_particle(particle<T, VT>* particle) {}
     
-    const std::vector<object<T, VT>*>& objects() const noexcept { return _objects; }
+    const std::vector<particle<T, VT>*>& particles() const noexcept { return _particles; }
     
+    void resolve_collision(uint32_t obj_1_idx, uint32_t obj_2_idx) {
+        
+    }
+
     void step(T dt) {
         vec2<T> next_pos;
-        for (object<T, VT>* obj : _objects) {
+        for (particle<T, VT>* obj : _particles) {
             obj->force += _gravity * obj->mass;
             obj->velocity += obj->force / obj->mass * dt;
             obj->position += obj->velocity * dt;
-
             obj->force.set_all(0);
         }
     }
@@ -34,5 +37,5 @@ public:
 
 private:
     const VT                    _gravity{0, 9.81f};
-    std::vector<object<T, VT>*> _objects;
+    std::vector<particle<T, VT>*> _particles;
 };

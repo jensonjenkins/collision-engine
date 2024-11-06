@@ -2,16 +2,17 @@
 #include <iostream>
 
 void basic_integration_with_solver() {
+
     environment<float32_t, vec2<float32_t>> env;
-    particle2d<float32_t> *c1 = new particle2d<float32_t>();
+    auto *c1 = new particle<float32_t, vec2<float32_t>>();
 
     c1->mass = 2;
     c1->radius = 10;
     c1->position = vec2<float32_t>(100, 100);
-    c1->velocity = vec2<float32_t>(0, 0);
+    c1->velocity = vec2<float32_t>(30, 0);
     c1->force = vec2<float32_t>(0, 0);
     
-    env.add_object(c1);    
+    env.add_particle(c1);    
 
     renderer<float32_t, vec2<float32_t>> r(env);
 

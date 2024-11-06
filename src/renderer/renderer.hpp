@@ -8,7 +8,7 @@
 
 /**
  * @tparam T    numeric primitive type (e.g. float32_t, float64_t, etc.)
- * @tparam TV   vector wrapper defined in object.hpp (e.g. vec2, vec3)
+ * @tparam TV   vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
 template <typename T, typename VT>
 class renderer {
@@ -21,30 +21,29 @@ public:
                 "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
     
     /**
-     * Populate the frame with objects
+     * Populate the frame with particles
      */
     void init_frame() {
-        const std::vector<object<T, VT>*>& objects = _env.objects();
+        const std::vector<particle<T, VT>*>& particles = _env.particles();
 
-        for(object<T, VT>* object : objects) {
-            const auto* obj = static_cast<const particle2d<T>*>(object);
-            sf::CircleShape circle(obj->radius);
-            circle.setPosition(obj->position.i(), obj->position.j());
-            _frame_objects.push_back(circle);
+        for(particle<T, VT>* particle : particles) {
+            sf::CircleShape circle(particle->radius);
+            circle.setPosition(particle->position.i(), particle->position.j());
+            _frame_particles.push_back(circle);
         }
     }
 
     /**
-     * Update position of objects
+     * Update position of particles
      */
     void update_frame() {
-        const std::vector<object<T, VT>*>& objects = _env.objects();
+        const std::vector<particle<T, VT>*>& particles = _env.particles();
 
         // this may be temporary, consider updating position immediately 
         // after obj.position is updated to preserve locality
-        for (int i = 0; i < objects.size(); i++) { 
-            const auto* obj = static_cast<const particle2d<T>*>(objects[i]);
-            _frame_objects[i].setPosition(obj->position.i(), obj->position.j());
+        for (int i = 0; i < particles.size(); i++) { 
+            const auto* obj = particles[i];
+            _frame_particles[i].setPosition(obj->position.i(), obj->position.j());
         }
     }
    
@@ -73,15 +72,15 @@ public:
         // this may be temporary, consider updating position immediately 
         // after obj.position is updated to preserve locality
         _window.clear();
-        for (const auto& object : _frame_objects) {
-            _window.draw(object);
+        for (const auto& particle : _frame_particles) {
+            _window.draw(particle);
         }
         _window.display();
     }
     
 private:
     environment<T, VT>&             _env;
-    std::vector<sf::CircleShape>    _frame_objects;
+    std::vector<sf::CircleShape>    _frame_particles;
     sf::RenderWindow                _window;
 
 };
