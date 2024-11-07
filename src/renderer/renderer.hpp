@@ -7,15 +7,15 @@
 #include <SFML/Window/Event.hpp>
 
 /**
- * @tparam T    numeric primitive type (e.g. float32_t, float64_t, etc.)
- * @tparam TV   vector wrapper defined in particle.hpp (e.g. vec2, vec3)
+ * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
-template <typename T, typename VT>
+template <typename VT>
 class renderer {
 public:
     static constexpr size_t window_width = 1280;
     static constexpr size_t window_height = 720;
-    explicit renderer(environment<T, VT>& env) 
+
+    explicit renderer(environment<VT>& env) 
         : _env(env)
         , _window(sf::VideoMode(window_width, window_height), 
                 "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
@@ -24,9 +24,9 @@ public:
      * Populate the frame with particles
      */
     void init_frame() {
-        const std::vector<particle<T, VT>*>& particles = _env.particles();
+        const std::vector<particle<VT>*>& particles = _env.particles();
 
-        for(particle<T, VT>* particle : particles) {
+        for(particle<VT>* particle : particles) {
             sf::CircleShape circle(particle->radius);
             circle.setPosition(particle->position.i(), particle->position.j());
             _frame_particles.push_back(circle);
@@ -37,7 +37,7 @@ public:
      * Update position of particles
      */
     void update_frame() {
-        const std::vector<particle<T, VT>*>& particles = _env.particles();
+        const std::vector<particle<VT>*>& particles = _env.particles();
 
         // this may be temporary, consider updating position immediately 
         // after obj.position is updated to preserve locality
@@ -79,8 +79,10 @@ public:
     }
     
 private:
-    environment<T, VT>&             _env;
+    environment<VT>&                _env;
     std::vector<sf::CircleShape>    _frame_particles;
     sf::RenderWindow                _window;
 
 };
+
+

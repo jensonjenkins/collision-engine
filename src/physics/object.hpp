@@ -4,23 +4,8 @@
 #include "arm_neon.h"
 
 /**
- * @tparam T    floating point type (e.g. float32_t, float64_t, etc.) 
- * @tparam TV   vector wrapper defined in particle.hpp (e.g. vec2, vec3)
+ * @tparam T floating point type (e.g. float32_t, float64_t, etc.) 
  */
-template <typename T, typename VT>
-struct particle {
-    VT  position;
-    VT  velocity;
-    VT  force;
-    T   mass;
-    T   radius;
-
-    particle() = default;
-} __attribute__((__packed__, aligned(32))); 
-
-
-static_assert(sizeof(particle<float32_t, vec2<float32_t>>) == 32 /* bytes */); 
-
 template <typename T>
 struct vec_traits;
 
@@ -32,6 +17,42 @@ struct vec_traits<vec2<float32_t>> {
     using element_type = float32_t;
     static constexpr uint8_t n_dims = 2;
 };
+
+/**
+ * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
+ */
+template <typename VT>
+struct particle {
+    using T = typename vec_traits<VT>::element_type;
+
+    VT  position;
+    VT  prev_position;
+    VT  acceleration;
+    T   mass;
+    T   radius;
+
+    particle() = default;
+
+    void step(T dt) {
+        // constexpr T VELOCITY_DAMPING = 40.f; // approximates air friction
+        const VT displacement = position - prev_position;
+
+        // Verlet integration:
+        // x(t + dt) = x(t) + v(t)dt + 1/2 * a(t) * t * t
+        // x(t + dt) = x(t) + dx(t) * a(t) * t * t;
+        // const VT new_position = position + displacement + (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
+        const VT new_position = position + displacement + (acceleration * dt * dt);
+        prev_position = position;
+        position = new_position;
+        acceleration = VT{0.f, 0.f};
+    }        
+
+} __attribute__((__packed__, aligned(32))); 
+
+
+static_assert(sizeof(particle<vec2<float32_t>>) == 32 /* bytes */); 
+
+
 
 
 
