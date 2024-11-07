@@ -71,7 +71,7 @@ private:
     // Constants
     static constexpr T  _eps             = 0.0001f;
     static constexpr T  _margin          = 2.f; 
-    static constexpr T  _response_coef   = 1.f;
+    static constexpr T  _response_coef   = 4.f;
     const VT            _gravity{0, 98.1f};
     VT                  _world_size;
 };

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../common/utils.hpp"
 #include "../physics/solver.hpp"
 #include "SFML/Window/WindowStyle.hpp"
 #include <SFML/Window/Event.hpp>
@@ -25,12 +26,16 @@ public:
      * Populate the frame with particles
      */
     void init_frame() {
+        float32_t hue = 0;
         const std::vector<particle<VT>*>& particles = _env.particles();
 
         for(particle<VT>* particle : particles) {
             sf::CircleShape circle(particle->radius);
             circle.setPosition(particle->position.i(), particle->position.j());
+            circle.setFillColor(collision_engine::hsv_to_rgb(hue, 1.f, 1.f));
             _frame_particles.push_back(circle);
+            hue += 360.f / particles.size();
+            if (hue > 360) hue -= 360;
         }
     }
 
@@ -46,14 +51,6 @@ public:
             const auto* obj = particles[i];
             _frame_particles[i].setPosition(obj->position.i(), obj->position.j());
         }
-    }
-
-    void set_zoom(T zoom) {
-
-    }
-
-    void set_focus(VT focus) {
-
     }
 
     void set_frame_limit(uint32_t frame_limit) {

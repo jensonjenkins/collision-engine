@@ -18,11 +18,11 @@ void basic_integration_with_solver() {
     fps_text.setFont(font);
     fps_text.setCharacterSize(12);
     fps_text.setFillColor(sf::Color::White);
-    fps_text.setPosition(20.f, 20.f);
+    fps_text.setPosition(10.f, 10.f);
 
     r.set_frame_limit(fps_cap);
 
-    for (uint32_t i = 0; i < 1000; ++i) {
+    for (uint32_t i = 0; i < 1100; ++i) {
         auto *p = new particle<vec2<float32_t>>();
         p->radius = 3;
         p->position = vec2<float32_t>(30 + i * 0.1, 60 + i * 0.1);  
@@ -39,13 +39,12 @@ void basic_integration_with_solver() {
     while(r.run()) {
         env.step(dt);
         r.update_frame();
-    
+         
         // calculate fps
         float32_t c_time = clock.restart().asSeconds();
         fps = 1.f / c_time;
         std::ostringstream ss;
         ss<<"FPS: "<<fps;
-        std::cout<<ss.str()<<std::endl;
         fps_text.setString(ss.str());
  
         r.render_with_fps(fps_text);
