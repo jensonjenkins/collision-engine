@@ -6,7 +6,7 @@
 
 
 void step_function_test() {
-    environment<vec2<float32_t>> env;
+    environment<vec2<float32_t>> env(vec2<float32_t>{300.f, 300.f});
     auto *c1 = new particle<vec2<float32_t>>();
 
     c1->mass = 2;

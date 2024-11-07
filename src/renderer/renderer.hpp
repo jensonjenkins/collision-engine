@@ -1,16 +1,17 @@
 #pragma once
 
 #include "../physics/solver.hpp"
-#include "SFML/Graphics/CircleShape.hpp"
-#include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/WindowStyle.hpp"
 #include <SFML/Window/Event.hpp>
+#include <SFML/Graphics.hpp>
 
 /**
  * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
 template <typename VT>
 class renderer {
+private:
+    using T = typename vec_traits<VT>::element_type;
 public:
     static constexpr size_t window_width = 1280;
     static constexpr size_t window_height = 720;
@@ -46,6 +47,18 @@ public:
             _frame_particles[i].setPosition(obj->position.i(), obj->position.j());
         }
     }
+
+    void set_zoom(T zoom) {
+
+    }
+
+    void set_focus(VT focus) {
+
+    }
+
+    void set_frame_limit(uint32_t frame_limit) {
+        _window.setFramerateLimit(frame_limit);
+    }
    
     bool is_running() {
         return _window.isOpen();
@@ -75,6 +88,21 @@ public:
         for (const auto& particle : _frame_particles) {
             _window.draw(particle);
         }
+        _window.display();
+    }
+
+    /**
+     * Show image to the viewport with fps information
+     */
+    void render_with_fps(sf::Text fps) {
+        // this may be temporary, consider updating position immediately 
+        // after obj.position is updated to preserve locality
+        _window.clear();
+
+        for (const auto& particle : _frame_particles) {
+            _window.draw(particle);
+        }
+        _window.draw(fps);
         _window.display();
     }
     

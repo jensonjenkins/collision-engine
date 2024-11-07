@@ -34,14 +34,13 @@ struct particle {
     particle() = default;
 
     void step(T dt) {
-        // constexpr T VELOCITY_DAMPING = 40.f; // approximates air friction
+        constexpr T VELOCITY_DAMPING = 15.f; // approximates air friction
         const VT displacement = position - prev_position;
 
         // Verlet integration:
         // x(t + dt) = x(t) + v(t)dt + 1/2 * a(t) * t * t
         // x(t + dt) = x(t) + dx(t) * a(t) * t * t;
-        // const VT new_position = position + displacement + (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
-        const VT new_position = position + displacement + (acceleration * dt * dt);
+        const VT new_position = position + displacement + (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
         prev_position = position;
         position = new_position;
         acceleration = VT{0.f, 0.f};
