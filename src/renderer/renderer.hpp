@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../common/utils.hpp"
-#include "../physics/solver.hpp"
+#include "common/utils.hpp"
+#include "physics/solver.hpp"
 #include "SFML/Window/WindowStyle.hpp"
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics.hpp>
 
+namespace collision_engine {
 /**
  * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
@@ -18,8 +19,7 @@ public:
     static constexpr size_t window_height = 720;
 
     explicit renderer(environment<VT>& env) 
-        : _env(env)
-        , _window(sf::VideoMode(window_width, window_height), 
+        : _env(env), _window(sf::VideoMode(window_width, window_height), 
                 "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
     
     /**
@@ -91,7 +91,7 @@ public:
     /**
      * Show image to viewport with fps information
      */
-    void render_with_fps(sf::Text fps) {
+    void render_with_fps(sf::Text fps, sf::Text latency) {
         // this may be temporary, consider updating position immediately 
         // after obj.position is updated to preserve locality
         _window.clear();
@@ -100,6 +100,7 @@ public:
             _window.draw(particle);
         }
         _window.draw(fps);
+        _window.draw(latency);
         _window.display();
     }
     
@@ -110,4 +111,4 @@ private:
 
 };
 
-
+} // namespace collision engine

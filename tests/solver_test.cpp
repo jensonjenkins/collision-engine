@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iostream>
 
+namespace collision_engine {
 
 void step_function_test() {
     environment<vec2<float32_t>> env(vec2<float32_t>{300.f, 300.f});
@@ -27,11 +28,16 @@ void step_function_test() {
     }
 }
 
+} // namespace collision_engine
+
 int main() { 
+    std::cout<<"==================================================================="<<std::endl;
     std::cout<<"Running solver_test.cpp..."<<std::endl;
+    std::cout<<"==================================================================="<<std::endl;
 
-    step_function_test();
+    collision_engine::step_function_test();
 
+    std::cout<<"==================================================================="<<std::endl;
     std::cout<<"solver_test - ok."<<std::endl;
 
     return 0;

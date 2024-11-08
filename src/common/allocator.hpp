@@ -2,9 +2,6 @@
 
 #include <memory>
 
-// TODO:
-// implement: linear & pool allocator
-
 namespace collision_engine {
 
 template <typename AllocatorImpl>
@@ -26,7 +23,7 @@ public:
      * @param ptr pointer to object to deallocate
      */
     void deallocate(void* ptr) {
-        return static_cast<AllocatorImpl*>(this)->free_impl(ptr);
+        return static_cast<AllocatorImpl*>(this)->deallocate_impl(ptr);
     }
     /**
      * Wipes current buffer clean, provides a newly allocated buffer with size _allocated_buffer_size
@@ -37,7 +34,9 @@ public:
 
     // no copy, no move
     allocator(const allocator& other) = delete;
+    allocator& operator=(const allocator& other) = delete;
     allocator(const allocator&& other) = delete; 
+    allocator& operator=(const allocator&& other) = delete; 
 
 protected:
     std::size_t _allocated_buffer_size;
@@ -45,7 +44,7 @@ protected:
 
 };
 
-class linear_allocator : allocator<linear_allocator> {
+class linear_allocator : public allocator<linear_allocator> {
 public: 
     explicit linear_allocator(std::size_t buffer_size) : allocator<linear_allocator>(buffer_size) {
         _buffer_start_ptr = std::malloc(_allocated_buffer_size);
@@ -60,11 +59,12 @@ public:
         void* aligned_ptr = std::align(alignment, allocation_size, _buffer_offset_ptr, remaining_size); 
 
         if (aligned_ptr != nullptr) {
-            // get size that the alignment took up (allocated + alignment cost)
-            std::size_t alignment_size = std::uintptr_t(aligned_ptr) - std::uintptr_t(_buffer_offset_ptr);
-            _used_amount += std::size_t(alignment_size + _allocated_buffer_size);
-            _buffer_offset_ptr = (void*)(std::uintptr_t(aligned_ptr) + allocation_size);
+            // get size that the alignment cost
+            std::size_t alignment_size = static_cast<char*>(aligned_ptr) - static_cast<char*>(_buffer_offset_ptr);
+            _used_amount += alignment_size + allocation_size;
+            _buffer_offset_ptr = static_cast<void*>(static_cast<char*>(aligned_ptr) + allocation_size);
         }
+
         return aligned_ptr;
     }
     void deallocate_impl(void* ptr) = delete;
@@ -76,13 +76,16 @@ public:
 
     // no copy, no move
     linear_allocator(const allocator& other) = delete;
+    linear_allocator& operator=(const allocator& other) = delete; 
     linear_allocator(const allocator&& other) = delete;
+    linear_allocator& operator=(const allocator&& other) = delete; 
 
 private:
     void* _buffer_offset_ptr{nullptr}; // pointer to next available location in the buffer
     void* _buffer_start_ptr{nullptr};
 };
 
+// TODO: implement pool allocator
 class pool_allocator : allocator<pool_allocator> {
     
 };

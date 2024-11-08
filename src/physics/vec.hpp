@@ -2,6 +2,8 @@
 
 #include "arm_neon.h"
 
+namespace collision_engine {
+
 /**
  * @tparam T    numeric primitive type (e.g. float32_t, float64_t, etc.)
  * @tparam TV   vector wrapper defined in particle.hpp (e.g. vec2, vec3)
@@ -51,4 +53,6 @@ struct vec2<float32_t> {
     friend bool operator==(const vec2& a, const vec2& b) { return a.i() == b.i() && a.j() == b.j(); }
     friend bool operator!=(const vec2& a, const vec2& b) { return !(a == b); }
 
-}; 
+};
+
+} // namespace collision engine

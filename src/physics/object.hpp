@@ -3,6 +3,8 @@
 #include "vec.hpp"
 #include "arm_neon.h"
 
+namespace collision_engine {
+
 /**
  * @tparam T floating point type (e.g. float32_t, float64_t, etc.) 
  */
@@ -40,7 +42,8 @@ struct particle {
         // Verlet integration:
         // x(t + dt) = x(t) + v(t)dt + 1/2 * a(t) * t * t
         // x(t + dt) = x(t) + dx(t) * a(t) * t * t;
-        const VT new_position = position + displacement + (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
+        const VT new_position = position + displacement + 
+            (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
         prev_position = position;
         position = new_position;
         acceleration = VT{0.f, 0.f};
@@ -48,10 +51,8 @@ struct particle {
 
 } __attribute__((__packed__, aligned(32))); 
 
-
 static_assert(sizeof(particle<vec2<float32_t>>) == 32 /* bytes */); 
 
-
-
+} // namespace collision engine
 
 

@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <vector>
 
+namespace collision_engine {
 /**
  * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
@@ -75,4 +76,4 @@ private:
     VT                  _world_size;
 };
 
-
+} // namespace collision engine
