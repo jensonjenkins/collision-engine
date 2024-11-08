@@ -23,7 +23,7 @@ public:
                 "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
     
     /**
-     * Populate the frame with particles
+     * Populate the frame with particles on viewport
      */
     void init_frame() {
         float32_t hue = 0;
@@ -32,7 +32,7 @@ public:
         for(particle<VT>* particle : particles) {
             sf::CircleShape circle(particle->radius);
             circle.setPosition(particle->position.i(), particle->position.j());
-            circle.setFillColor(collision_engine::hsv_to_rgb(hue, 1.f, 1.f));
+            circle.setFillColor(collision_engine::hsv_to_rgb(hue, 0.8f, 0.8f));
             _frame_particles.push_back(circle);
             hue += 360.f / particles.size();
             if (hue > 360) hue -= 360;
@@ -40,7 +40,7 @@ public:
     }
 
     /**
-     * Update position of particles
+     * Update position of SFML particles on viewport
      */
     void update_frame() {
         const std::vector<particle<VT>*>& particles = _env.particles();
@@ -89,7 +89,7 @@ public:
     }
 
     /**
-     * Show image to the viewport with fps information
+     * Show image to viewport with fps information
      */
     void render_with_fps(sf::Text fps) {
         // this may be temporary, consider updating position immediately 

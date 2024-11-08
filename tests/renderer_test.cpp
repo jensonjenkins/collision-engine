@@ -22,7 +22,7 @@ void basic_integration_with_solver() {
 
     r.set_frame_limit(fps_cap);
 
-    for (uint32_t i = 0; i < 1100; ++i) {
+    for (uint32_t i = 0; i < 1200; ++i) {
         auto *p = new particle<vec2<float32_t>>();
         p->radius = 3;
         p->position = vec2<float32_t>(30 + i * 0.1, 60 + i * 0.1);  

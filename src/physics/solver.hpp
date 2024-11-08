@@ -61,8 +61,7 @@ public:
             } else if (particle->position.j() < _margin) {
                 particle->position.set_j(_margin);
             }
-        }
-        
+        } 
     }
 
 private:
@@ -75,3 +74,5 @@ private:
     const VT            _gravity{0, 98.1f};
     VT                  _world_size;
 };
+
+
