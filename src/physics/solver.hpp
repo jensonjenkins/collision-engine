@@ -10,12 +10,12 @@ namespace collision_engine {
 /**
  * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
-template <typename VT>
+template <typename VT, typename W>
 class environment {
 private: 
     using T = typename vec_traits<VT>::element_type;
 public:
-    environment(VT world_size) noexcept : _world_size(world_size), _grid{10, 10} {};
+    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 10, 10} {};
     
     void add_particle(particle<VT> *p) noexcept { _particles.push_back(p); }
     void remove_particle(particle<VT>* p) {}
@@ -64,7 +64,7 @@ public:
     }
 
     void step(T dt) {
-        _grid.populate(_particles);
+        // _grid.populate(_particles);
         // update_particle_position();
         for (uint32_t i = 0; i < _particles.size(); i++) {
             for (uint32_t j = i + 1; j < _particles.size(); j++) {
@@ -90,7 +90,7 @@ public:
     }
 
 private:
-    grid<particle<VT>>          _grid;
+    grid<particle<VT>, W>       _grid;
     std::vector<particle<VT>*>  _particles;
 
     // Constants
@@ -98,7 +98,7 @@ private:
     static constexpr T  _margin             = 2.f; 
     static constexpr T  _response_coef      = 4.f;
     const VT _gravity{0, 98.1f};
-    VT _world_size;
+    W _world_size;
 };
 
 } // namespace collision engine

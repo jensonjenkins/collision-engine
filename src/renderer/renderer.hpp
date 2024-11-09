@@ -11,13 +11,13 @@ namespace collision_engine {
 /**
  * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
-template <typename VT>
+template <typename VT, typename W>
 class renderer {
 private:
     using T = typename vec_traits<VT>::element_type;
 public:
-    explicit renderer(environment<VT>& env) 
-        : _env(env), _window(sf::VideoMode(VIEWPORT_WIDTH, VIEWPORT_HEIGHT), 
+    explicit renderer(environment<VT, W>& env) 
+        : _env(env), _window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), 
                 "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
     
     /**
@@ -103,7 +103,7 @@ public:
     }
     
 private:
-    environment<VT>&                _env;
+    environment<VT, W>&                _env;
     std::vector<sf::CircleShape>    _frame_particles;
     sf::RenderWindow                _window;
 

@@ -10,7 +10,7 @@ void linear_allocator_single_allocation() {
     linear_allocator alloc(32);
     void* allocated_memory = alloc.allocate(sizeof(PT), alignof(PT));
     auto *p = new (allocated_memory) PT();
-    std::cout<<"\n1 - ok: linear_allocator: allocated single particle<vec2<float32_t>>\n"<<std::endl;
+    std::cout<<"\n1 - ok: linear_allocator: allocated single particle<vec2<float32_t>>"<<std::endl;
 }
 
 void linear_allocator_multple_allocation() {
@@ -21,7 +21,7 @@ void linear_allocator_multple_allocation() {
         void* allocated_memory = alloc.allocate(sizeof(PT), alignof(PT));
         auto *p = new (allocated_memory) PT();
     }
-    std::cout<<"2 - ok: linear_allocator: allocated 1200 particle<vec2<float32_t>>"<<std::endl;
+    std::cout<<"\n2 - ok: linear_allocator: allocated 1200 particle<vec2<float32_t>>"<<std::endl;
 }
 
 

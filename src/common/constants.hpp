@@ -4,7 +4,7 @@
 
 namespace collision_engine {
 
-static constexpr size_t VIEWPORT_WIDTH = 1280;
-static constexpr size_t VIEWPORT_HEIGHT = 720;
+static constexpr size_t WINDOW_WIDTH = 1280;
+static constexpr size_t WINDOW_HEIGHT = 720;
 
 } // namespace collision engine

@@ -2,6 +2,7 @@
 
 #include "vec.hpp"
 #include "arm_neon.h"
+#include <cstdint>
 
 namespace collision_engine {
 
@@ -17,6 +18,12 @@ struct vec_traits;
 template <>
 struct vec_traits<vec2<float32_t>> {
     using element_type = float32_t;
+    static constexpr uint8_t n_dims = 2;
+};
+
+template <>
+struct vec_traits<vec2<uint32_t>> {
+    using element_type = uint32_t;
     static constexpr uint8_t n_dims = 2;
 };
 
@@ -39,7 +46,6 @@ struct particle {
         constexpr T VELOCITY_DAMPING = 15.f; // approximates air resistance 
         const VT displacement = position - prev_position;
 
-        // Verlet integration:
         // x(t + dt) = x(t) + v(t)dt + a(t) * t * t
         const VT new_position = position + displacement + (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
         prev_position = position;

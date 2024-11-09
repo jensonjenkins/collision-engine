@@ -10,11 +10,13 @@ namespace collision_engine {
 constexpr uint32_t fps_cap      = 60;
 constexpr uint32_t n_particles  = 1300;
 
-void basic_integration_with_solver() { 
+void integration_with_solver() { 
+    using W = vec2<uint32_t>;
     using VT = vec2<float32_t>;
+    using PT = particle<VT>;
 
-    environment<VT> env(VT{300.f, 300.f});
-    renderer<VT> r(env);
+    environment<VT, W> env(W{300, 300});
+    renderer<VT, W> r(env);
 
     sf::Font font;
     font.loadFromFile("assets/tuffy.ttf");
@@ -33,10 +35,10 @@ void basic_integration_with_solver() {
 
     r.set_frame_limit(fps_cap);
     
-    linear_allocator alloc(n_particles * sizeof(particle<VT>));
+    linear_allocator alloc(n_particles * sizeof(PT));
     for (uint32_t i = 0; i < n_particles; ++i) {
-        void* allocated_memory = alloc.allocate(sizeof(particle<VT>), alignof(particle<VT>));
-        auto *p = new (allocated_memory) particle<VT>();
+        void* allocated_memory = alloc.allocate(sizeof(PT), alignof(PT));
+        auto *p = new (allocated_memory) PT();
         p->radius = 3;
         p->position = VT(30 + i * 0.1, 60 + i * 0.1);  
         p->prev_position = VT(p->position.i() - 0.05f, p->position.j());
@@ -67,7 +69,7 @@ void basic_integration_with_solver() {
 int main() {
     std::cout<<"Running renderer_test.cpp..."<<std::endl;
     
-    collision_engine::basic_integration_with_solver();
+    collision_engine::integration_with_solver();
 
     std::cout<<"renderer_test - ok."<<std::endl;
 
