@@ -7,11 +7,13 @@
 
 namespace collision_engine {
 
-constexpr uint32_t fps_cap = 120;
+constexpr uint32_t fps_cap = 60;
 
 void basic_integration_with_solver() { 
-    environment<vec2<float32_t>> env(vec2<float32_t>{300.f, 300.f});
-    renderer<vec2<float32_t>> r(env);
+    using VT = vec2<float32_t>;
+
+    environment<VT> env(VT{300.f, 300.f});
+    renderer<VT> r(env);
 
     sf::Font font;
     font.loadFromFile("assets/tuffy.ttf");
@@ -29,14 +31,14 @@ void basic_integration_with_solver() {
     latency_text.setPosition(10.f, 22.f);
 
     r.set_frame_limit(fps_cap);
-   
-    linear_allocator alloc(38400);
+    
+    linear_allocator alloc(1200 * 32);
     for (uint32_t i = 0; i < 1200; ++i) {
-        void* allocated_memory = alloc.allocate(sizeof(particle<vec2<float32_t>>), alignof(particle<vec2<float32_t>>));
-        auto *p = new (allocated_memory) particle<vec2<float32_t>>();
+        void* allocated_memory = alloc.allocate(sizeof(particle<VT>), alignof(particle<VT>));
+        auto *p = new (allocated_memory) particle<VT>();
         p->radius = 3;
-        p->position = vec2<float32_t>(30 + i * 0.1, 60 + i * 0.1);  
-        p->prev_position = vec2<float32_t>(p->position.i() - 0.05f, p->position.j());
+        p->position = VT(30 + i * 0.1, 60 + i * 0.1);  
+        p->prev_position = VT(p->position.i() - 0.05f, p->position.j());
         env.add_particle(p);
     }
 
@@ -54,7 +56,7 @@ void basic_integration_with_solver() {
         float32_t c_time = clock.restart().asSeconds();
         fps = 1.f / c_time;
         fps_text.setString("fps: " + std::to_string(fps));
-        latency_text.setString("latency: " + std::to_string(c_time));
+        latency_text.setString("latency: " + std::to_string(c_time) + "s");
  
         r.render_with_fps(fps_text, latency_text);
     }

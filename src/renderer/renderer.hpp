@@ -91,7 +91,7 @@ public:
     /**
      * Show image to viewport with fps information
      */
-    void render_with_fps(sf::Text fps, sf::Text latency) {
+    void render_with_fps(const sf::Text& fps, const sf::Text& latency) {
         // this may be temporary, consider updating position immediately 
         // after obj.position is updated to preserve locality
         _window.clear();

@@ -59,7 +59,7 @@ public:
         void* aligned_ptr = std::align(alignment, allocation_size, _buffer_offset_ptr, remaining_size); 
 
         if (aligned_ptr != nullptr) {
-            // get size that the alignment cost
+            // calculate cost of alignment to update _used_amount
             std::size_t alignment_size = static_cast<char*>(aligned_ptr) - static_cast<char*>(_buffer_offset_ptr);
             _used_amount += alignment_size + allocation_size;
             _buffer_offset_ptr = static_cast<void*>(static_cast<char*>(aligned_ptr) + allocation_size);
@@ -85,11 +85,10 @@ private:
     void* _buffer_start_ptr{nullptr};
 };
 
-// TODO: implement pool allocator
 class pool_allocator : allocator<pool_allocator> {
     
 };
 
-}
+} // namespace collision engine 
 
 
