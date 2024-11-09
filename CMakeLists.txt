@@ -26,7 +26,10 @@ target_link_libraries(renderer_test PRIVATE sfml-graphics)
 
 add_executable(solver_test tests/solver_test.cpp)
 target_include_directories(renderer_test PRIVATE "src")
-target_link_libraries(renderer_test PRIVATE sfml-graphics)
+target_link_libraries(solver_test PRIVATE sfml-graphics)
 
 add_executable(allocator_test tests/allocator_test.cpp)
-target_include_directories(renderer_test PRIVATE "src")
+target_include_directories(allocator_test PRIVATE "src")
+
+add_executable(grid_test tests/grid_test.cpp)
+target_include_directories(grid_test PRIVATE "src")

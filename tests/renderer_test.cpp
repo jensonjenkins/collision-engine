@@ -7,7 +7,8 @@
 
 namespace collision_engine {
 
-constexpr uint32_t fps_cap = 60;
+constexpr uint32_t fps_cap      = 60;
+constexpr uint32_t n_particles  = 1300;
 
 void basic_integration_with_solver() { 
     using VT = vec2<float32_t>;
@@ -32,8 +33,8 @@ void basic_integration_with_solver() {
 
     r.set_frame_limit(fps_cap);
     
-    linear_allocator alloc(1200 * 32);
-    for (uint32_t i = 0; i < 1200; ++i) {
+    linear_allocator alloc(n_particles * sizeof(particle<VT>));
+    for (uint32_t i = 0; i < n_particles; ++i) {
         void* allocated_memory = alloc.allocate(sizeof(particle<VT>), alignof(particle<VT>));
         auto *p = new (allocated_memory) particle<VT>();
         p->radius = 3;

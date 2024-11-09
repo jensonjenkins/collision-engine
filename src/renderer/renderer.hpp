@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/utils.hpp"
+#include "common/constants.hpp"
 #include "physics/solver.hpp"
 #include "SFML/Window/WindowStyle.hpp"
 #include <SFML/Window/Event.hpp>
@@ -15,11 +16,8 @@ class renderer {
 private:
     using T = typename vec_traits<VT>::element_type;
 public:
-    static constexpr size_t window_width = 1280;
-    static constexpr size_t window_height = 720;
-
     explicit renderer(environment<VT>& env) 
-        : _env(env), _window(sf::VideoMode(window_width, window_height), 
+        : _env(env), _window(sf::VideoMode(VIEWPORT_WIDTH, VIEWPORT_HEIGHT), 
                 "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
     
     /**
