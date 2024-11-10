@@ -3,6 +3,7 @@
 #include "arm_neon.h"
 #include <cassert>
 #include <cstdint>
+#include <iostream>
 #include <vector>
 
 namespace collision_engine {
@@ -48,16 +49,26 @@ public:
         }
     }
 
+    bool is_valid_cell(uint32_t cell_id) const noexcept {
+        return (cell_id >= 0 && cell_id < _n_rows * _n_cols);
+    }
+
     uint32_t get_cell_id(float32_t i, float32_t j) {
         uint32_t i_cell = static_cast<uint32_t>(i) / _cell_height;
         uint32_t j_cell = static_cast<uint32_t>(j) / _cell_width;
+        if (i_cell == _n_rows) {
+            i_cell--;
+        }
+        if (j_cell == _n_cols) {
+            j_cell--;
+        }
         assert(i_cell >= 0 && i_cell < _n_rows && j_cell >= 0 && j_cell < _n_cols);
         return i_cell * _n_cols + j_cell;
     }
 
-    inline uint32_t n_rows() const noexcept { return _n_rows; }
-    inline uint32_t n_cols() const noexcept { return _n_cols; }
-    inline std::vector<cell<PT*>>& cells() noexcept { return _cells; }
+    uint32_t n_rows() const noexcept { return _n_rows; }
+    uint32_t n_cols() const noexcept { return _n_cols; }
+    std::vector<cell<PT*>>& cells() noexcept { return _cells; }
 
     
 private: 

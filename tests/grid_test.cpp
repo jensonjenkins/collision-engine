@@ -28,6 +28,7 @@ void populate_grid() {
             particles.push_back(p);
         }
     }
+
     for (uint32_t i = 0; i < 10; ++i) { // arbitrarily place 10 more particles on pixel (64, 12)
         void* allocated_memory = lin_alloc.allocate(sizeof(PT), alignof(PT));
         auto *p = new (allocated_memory) PT();

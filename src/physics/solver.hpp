@@ -15,7 +15,7 @@ class environment {
 private: 
     using T = typename vec_traits<VT>::element_type;
 public:
-    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 10, 10} {};
+    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 25, 25} {};
     
     void add_particle(particle<VT> *p) noexcept { _particles.push_back(p); }
     void remove_particle(particle<VT>* p) {}
@@ -43,11 +43,16 @@ public:
     }
 
     void resolve_grid_collision(uint32_t particle_id, uint32_t cell_id) {
-        for (uint32_t o_particle_id : _grid.cells()[cell_id].particles()) {
+        if (!_grid.is_valid_cell(cell_id)) {
+            return;
+        }
+        std::vector<cell<particle<VT>*>>& cells = _grid.cells();
+        for (uint32_t o_particle_id : cells[cell_id].particles()) {
+            if(o_particle_id == particle_id) continue;
             resolve_particle_collision(particle_id, o_particle_id); // resovlve 1v1 particle collision
         }        
     }
-
+    
     void update_particle_position() {
         for (uint32_t idx = 0; idx < _particles.size(); idx++) {
             uint32_t cell_id = _grid.get_cell_id(_particles[idx]->position.i(), _particles[idx]->position.j());
@@ -64,13 +69,13 @@ public:
     }
 
     void step(T dt) {
-        // _grid.populate(_particles);
-        // update_particle_position();
-        for (uint32_t i = 0; i < _particles.size(); i++) {
-            for (uint32_t j = i + 1; j < _particles.size(); j++) {
-                resolve_particle_collision(i, j); // update particle position if collision occurs
-            }
-        }
+        _grid.populate(_particles);
+        update_particle_position();
+        // for (uint32_t i = 0; i < _particles.size(); i++) {
+        //     for (uint32_t j = i + 1; j < _particles.size(); j++) {
+        //         resolve_particle_collision(i, j); // update particle position if collision occurs
+        //     }
+        // }
         for (auto *particle : _particles) {
             particle->acceleration += _gravity;
             particle->step(dt); // update particle position and trajectory

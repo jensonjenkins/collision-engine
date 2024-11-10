@@ -47,7 +47,8 @@ struct particle {
         const VT displacement = position - prev_position;
 
         // x(t + dt) = x(t) + v(t)dt + a(t) * t * t
-        const VT new_position = position + displacement + (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
+        const VT new_position = position + displacement 
+            + (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
         prev_position = position;
         position = new_position;
         acceleration = VT{0.f, 0.f};

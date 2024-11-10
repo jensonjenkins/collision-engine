@@ -22,10 +22,12 @@ target_link_libraries(main PRIVATE sfml-graphics)
 
 add_executable(renderer_test tests/renderer_test.cpp)
 target_include_directories(renderer_test PRIVATE "src")
+set_target_properties(renderer_test PROPERTIES COMPILE_FLAGS "-g")
 target_link_libraries(renderer_test PRIVATE sfml-graphics)
 
 add_executable(solver_test tests/solver_test.cpp)
-target_include_directories(renderer_test PRIVATE "src")
+target_include_directories(solver_test PRIVATE "src")
+set_target_properties(solver_test PROPERTIES COMPILE_FLAGS "-g")
 target_link_libraries(solver_test PRIVATE sfml-graphics)
 
 add_executable(allocator_test tests/allocator_test.cpp)

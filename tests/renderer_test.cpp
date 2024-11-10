@@ -7,15 +7,15 @@
 
 namespace collision_engine {
 
-constexpr uint32_t fps_cap      = 60;
-constexpr uint32_t n_particles  = 1300;
+constexpr uint32_t fps_cap      = 1000;
+constexpr uint32_t n_particles  = 100;
 
 void integration_with_solver() { 
     using W = vec2<uint32_t>;
     using VT = vec2<float32_t>;
     using PT = particle<VT>;
 
-    environment<VT, W> env(W{300, 300});
+    environment<VT, W> env(W{600, 600});
     renderer<VT, W> r(env);
 
     sf::Font font;
@@ -40,8 +40,8 @@ void integration_with_solver() {
         void* allocated_memory = alloc.allocate(sizeof(PT), alignof(PT));
         auto *p = new (allocated_memory) PT();
         p->radius = 3;
-        p->position = VT(30 + i * 0.1, 60 + i * 0.1);  
-        p->prev_position = VT(p->position.i() - 0.05f, p->position.j());
+        p->position = VT(i * 6, i * 6);  
+        p->prev_position = VT(p->position.i(), p->position.j());
         env.add_particle(p);
     }
 
