@@ -24,7 +24,6 @@ public:
      * Populate the frame with particles on viewport
      */
     void init_frame() {
-        float32_t hue = 0;
         const std::vector<particle<VT>*>& particles = _env.particles();
 
         for(particle<VT>* particle : particles) {
@@ -32,9 +31,18 @@ public:
             circle.setPosition(particle->position.i(), particle->position.j());
             circle.setFillColor(collision_engine::hsv_to_rgb(hue, 0.8f, 0.8f));
             _frame_particles.push_back(circle);
-            hue += 360.f / particles.size();
+            hue += 0.3;
             if (hue > 360) hue -= 360;
         }
+    }
+
+    void add_object_to_frame(particle<VT>* particle) {
+        sf::CircleShape circle(particle->radius);
+        circle.setPosition(particle->position.i(), particle->position.j());
+        circle.setFillColor(collision_engine::hsv_to_rgb(hue, 0.8f, 0.8f));
+        _frame_particles.push_back(circle);
+        hue += 0.3;
+        if (hue > 360) hue -= 360;
     }
 
     /**
@@ -89,7 +97,7 @@ public:
     /**
      * Show image to viewport with fps information
      */
-    void render_with_fps(const sf::Text& fps, const sf::Text& latency) {
+    void render_with_fps(const sf::Text& fps, const sf::Text& latency, const sf::Text& particle_count) {
         // this may be temporary, consider updating position immediately 
         // after obj.position is updated to preserve locality
         _window.clear();
@@ -99,6 +107,7 @@ public:
         }
         _window.draw(fps);
         _window.draw(latency);
+        _window.draw(particle_count);
         _window.display();
     }
     
@@ -106,6 +115,7 @@ private:
     environment<VT, W>&                _env;
     std::vector<sf::CircleShape>    _frame_particles;
     sf::RenderWindow                _window;
+    float32_t                       hue = 0;
 
 };
 

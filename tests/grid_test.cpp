@@ -45,9 +45,9 @@ void populate_grid() {
     for (uint32_t i = 0; i < g.cells().size(); ++i) {
         if(i == 61) { // the get_cell_id of pixel (64, 12) is 61, 
                       // so check of cell 61 has 10 more particles than the rest
-            assert(g.cells()[i].particles().size() == 11);
+            assert(g.cells()[i].particle_ids().size() == 11);
         } else {
-            assert(g.cells()[i].particles().size() == 1);
+            assert(g.cells()[i].particle_ids().size() == 1);
         }
     }
     

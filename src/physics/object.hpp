@@ -51,9 +51,8 @@ struct particle {
             + (acceleration - displacement * VELOCITY_DAMPING) * (dt * dt);
         prev_position = position;
         position = new_position;
-        acceleration = VT{0.f, 0.f};
+        acceleration = VT{0.f, 0.f};    
     }        
-
 } __attribute__((__packed__, aligned(32))); 
 
 static_assert(sizeof(particle<vec2<float32_t>>) == 32 /* bytes */); 

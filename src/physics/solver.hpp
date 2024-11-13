@@ -15,7 +15,7 @@ class environment {
 private: 
     using T = typename vec_traits<VT>::element_type;
 public:
-    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 25, 25} {};
+    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 100, 100} {};
     
     void add_particle(particle<VT> *p) noexcept { _particles.push_back(p); }
     void remove_particle(particle<VT>* p) {}
@@ -28,7 +28,6 @@ public:
         const T r1 = p1->radius;
         const T r2 = p2->radius;
         const T combined_radius = r1 + r2;
-
         const VT p2_p1 = p1->position - p2->position;
         const T dist_sq = (p2_p1.i() * p2_p1.i()) + (p2_p1.j() * p2_p1.j());
 
@@ -39,43 +38,48 @@ public:
 
             p1->position += col_vec * (r2 / combined_radius); // simulates momentum
             p2->position -= col_vec * (r1 / combined_radius); 
-        }
+        }    
     }
 
-    void resolve_grid_collision(uint32_t particle_id, uint32_t cell_id) {
-        if (!_grid.is_valid_cell(cell_id)) {
+    void resolve_cell_collision(uint32_t cell_id, uint32_t o_cell_id) {
+        if (!_grid.is_valid_cell(o_cell_id)) {
             return;
         }
         std::vector<cell<particle<VT>*>>& cells = _grid.cells();
-        for (uint32_t o_particle_id : cells[cell_id].particles()) {
-            if(o_particle_id == particle_id) continue;
-            resolve_particle_collision(particle_id, o_particle_id); // resovlve 1v1 particle collision
-        }        
+        std::vector<uint32_t>& cur_cell = cells[cell_id].particle_ids();
+        std::vector<uint32_t>& o_cell = cells[o_cell_id].particle_ids();
+        
+        for (uint32_t c_particle_id : cur_cell) {
+            for (uint32_t o_particle_id : o_cell) {
+                if(c_particle_id == o_particle_id) continue;
+                resolve_particle_collision(c_particle_id, o_particle_id); // resovlve 1v1 particle collision
+            }
+        }
     }
     
     void update_particle_position() {
-        for (uint32_t idx = 0; idx < _particles.size(); idx++) {
-            uint32_t cell_id = _grid.get_cell_id(_particles[idx]->position.i(), _particles[idx]->position.j());
-            resolve_grid_collision(idx, cell_id);
-            resolve_grid_collision(idx, cell_id - 1);
-            resolve_grid_collision(idx, cell_id + 1);
-            resolve_grid_collision(idx, cell_id + _grid.n_cols());
-            resolve_grid_collision(idx, cell_id + _grid.n_cols() - 1);
-            resolve_grid_collision(idx, cell_id + _grid.n_cols() + 1);
-            resolve_grid_collision(idx, cell_id - _grid.n_cols());
-            resolve_grid_collision(idx, cell_id - _grid.n_cols() - 1);
-            resolve_grid_collision(idx, cell_id - _grid.n_cols() + 1);
+        for (uint32_t i = 0; i < _grid.n_rows(); i++) {
+            for (uint32_t j = 0; j < _grid.n_cols(); j++) {
+                uint32_t cell_id = i * _grid.n_cols() + j;
+
+                resolve_cell_collision(cell_id, cell_id);
+                resolve_cell_collision(cell_id, cell_id - 1);
+                resolve_cell_collision(cell_id, cell_id + 1);
+
+                resolve_cell_collision(cell_id, cell_id + _grid.n_cols());
+                resolve_cell_collision(cell_id, cell_id + _grid.n_cols() - 1);
+                resolve_cell_collision(cell_id, cell_id + _grid.n_cols() + 1);
+
+                resolve_cell_collision(cell_id, cell_id - _grid.n_cols());
+                resolve_cell_collision(cell_id, cell_id - _grid.n_cols() - 1);
+                resolve_cell_collision(cell_id, cell_id - _grid.n_cols() + 1);
+            }
         }
     }
 
     void step(T dt) {
         _grid.populate(_particles);
         update_particle_position();
-        // for (uint32_t i = 0; i < _particles.size(); i++) {
-        //     for (uint32_t j = i + 1; j < _particles.size(); j++) {
-        //         resolve_particle_collision(i, j); // update particle position if collision occurs
-        //     }
-        // }
         for (auto *particle : _particles) {
             particle->acceleration += _gravity;
             particle->step(dt); // update particle position and trajectory
@@ -99,8 +103,8 @@ private:
     std::vector<particle<VT>*>  _particles;
 
     // Constants
-    static constexpr T  _eps                = 0.0001f;
-    static constexpr T  _margin             = 2.f; 
+    static constexpr T  _eps                = 0.001f;
+    static constexpr T  _margin             = 4.f; 
     static constexpr T  _response_coef      = 4.f;
     const VT _gravity{0, 98.1f};
     W _world_size;

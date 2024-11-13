@@ -1,9 +1,7 @@
 #pragma once
 
 #include "arm_neon.h"
-#include <cassert>
 #include <cstdint>
-#include <iostream>
 #include <vector>
 
 namespace collision_engine {
@@ -16,11 +14,12 @@ class cell {
 public:
     cell() = default;
 
-    std::vector<uint32_t>& particles() noexcept { return _particles; }
-    void add(uint32_t idx) { _particles.push_back(idx); }
+    std::vector<uint32_t>& particle_ids() noexcept { return _particle_ids; }
+
+    void add(uint32_t id) { _particle_ids.push_back(id); }
     
 private:    
-    std::vector<uint32_t> _particles;
+    std::vector<uint32_t> _particle_ids;
 };
 
 /**
@@ -30,11 +29,12 @@ template <typename PT, typename W>
 class grid {
 public:
     /**
+     * @param world_size world size of vec type W
      * @param n_rows number of rows the grid contains
      * @param n_cols number of cols the grid contains
      */
-    grid(W _world_size, uint32_t n_rows, uint32_t n_cols) noexcept 
-        : _n_rows(n_rows), _n_cols(n_cols), _cell_width(_world_size.i() / _n_cols), _cell_height(_world_size.j()/ _n_rows) { 
+    grid(W world_size, uint32_t n_rows, uint32_t n_cols) noexcept 
+        : _n_rows(n_rows), _n_cols(n_cols), _cell_width(world_size.i() / _n_cols), _cell_height(world_size.j()/ _n_rows) { 
         _cells.assign(_n_rows * _n_cols, cell<PT*>());
     }
 
@@ -62,7 +62,8 @@ public:
         if (j_cell == _n_cols) {
             j_cell--;
         }
-        assert(i_cell >= 0 && i_cell < _n_rows && j_cell >= 0 && j_cell < _n_cols);
+        // std::cout<<i<<" "<<j<<" "<<i_cell<<" "<<j_cell<<" "<<_n_rows<<" "<<_n_cols<<std::endl;
+        // assert(i_cell >= 0 && i_cell < _n_rows && j_cell >= 0 && j_cell < _n_cols);
         return i_cell * _n_cols + j_cell;
     }
 

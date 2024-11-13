@@ -22,7 +22,7 @@ void resolve_grid_collision_test() {
         for (uint32_t j = 0; j < 10; ++j) {
             void* allocated_memory = lin_alloc.allocate(sizeof(PT), alignof(PT));
             auto *p = new (allocated_memory) PT();
-            p->radius = 2;
+            p->radius = 1.5;
             p->position = VT(i * 10, j * 10);  
             env.add_particle(p);
         }
