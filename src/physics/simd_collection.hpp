@@ -17,13 +17,16 @@ struct particle_collection {} __attribute__((aligned(64)));
 
 template <>
 struct particle_collection<float32_t> {
+private:
+    const float32x4_t VELOCITY_DAMPING_REG  = vdupq_n_f32(40.f);
+    const float32x4_t DT_SQ_REG;
+
 public:
     size_t      allocated_sz, used_sz{0}; 
-    float32x4_t axs, ays;
     float32_t   *xs, *ys, *pxs, *pys, *rs, *x_buffer, *y_buffer, dt;
 
-    const float32x4_t VELOCITY_DAMPING_REG = vdupq_n_f32(40.f);
-    const float32x4_t DT_SQ_REG;
+    const float32x4_t axs = vdupq_n_f32(0.f);
+    const float32x4_t ays = vdupq_n_f32(98.1f);
 
     particle_collection(size_t size, float32_t dt) : allocated_sz(size), dt(dt), DT_SQ_REG(vdupq_n_f32(dt * dt)) {
         pys         = static_cast<float32_t*>(std::malloc(allocated_sz * sizeof(float32_t)));
@@ -71,7 +74,6 @@ public:
         y_buffer = temp_buffer_y; 
     }
 
-private:
     /**
      * Perform updates for a single set of float32x4_t register 
      * for a single dimension (i.e. either x or y if its 2D) to be called
