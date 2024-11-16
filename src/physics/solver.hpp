@@ -7,6 +7,7 @@
 #include <vector>
 
 namespace collision_engine {
+
 /**
  * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
@@ -94,7 +95,6 @@ public:
                 particle->position.set_j(_margin);
             }
         } 
-
     }
     
     void step(T dt) {
@@ -106,17 +106,12 @@ public:
         }
     }
 
-    void set_simulation_update_rate(uint32_t frame_rate) {
-        _frame_dt = 1.f / static_cast<float32_t>(frame_rate);
-    }
-
 private:
     grid<particle<VT>, W>       _grid;
     std::vector<particle<VT>*>  _particles;
 
     // Constants
     W                           _world_size;
-    float32_t                   _frame_dt;
     const VT                    _gravity            {0, 98.1f};
     static constexpr T          _eps                = 0.001f;
     static constexpr T          _margin             = 4.f; 

@@ -1,12 +1,14 @@
 #include "arm_neon.h"
+#include <vector>
 #include <cstdlib>
 
-namespace collision_engine {
+namespace collision_engine::simd {
 
 template <typename T>
 struct particle {
     T x, y, px, py, r;
     particle(T x, T y, T px, T py, T r) : x(x), y(y), px(px), py(py), r(r) {};
+    ~particle() {};
 } __attribute__((aligned(64)));
 
 /**
@@ -22,56 +24,45 @@ private:
     const float32x4_t DT_SQ_REG;
 
 public:
-    size_t      allocated_sz, used_sz{0}; 
-    float32_t   *xs, *ys, *pxs, *pys, *rs, *x_buffer, *y_buffer, dt;
+    float32_t   dt;
+    std::vector<float32_t> xs, ys, pxs, pys, rs, x_buffer, y_buffer;
 
-    const float32x4_t axs = vdupq_n_f32(0.f);
-    const float32x4_t ays = vdupq_n_f32(98.1f);
+    const float32x4_t ax_reg = vdupq_n_f32(0.f); 
+    const float32x4_t ay_reg = vdupq_n_f32(98.1f); // gravity
 
-    particle_collection(size_t size, float32_t dt) : allocated_sz(size), dt(dt), DT_SQ_REG(vdupq_n_f32(dt * dt)) {
-        pys         = static_cast<float32_t*>(std::malloc(allocated_sz * sizeof(float32_t)));
-        pxs         = static_cast<float32_t*>(std::malloc(allocated_sz * sizeof(float32_t)));
-        xs          = static_cast<float32_t*>(std::malloc(allocated_sz * sizeof(float32_t)));
-        ys          = static_cast<float32_t*>(std::malloc(allocated_sz * sizeof(float32_t)));
-        x_buffer    = static_cast<float32_t*>(std::malloc(allocated_sz * sizeof(float32_t)));
-        y_buffer    = static_cast<float32_t*>(std::malloc(allocated_sz * sizeof(float32_t)));
-        rs          = static_cast<float32_t*>(std::malloc(allocated_sz * sizeof(float32_t)));
-    }
+    particle_collection(size_t size, float32_t dt) : dt(dt), DT_SQ_REG(vdupq_n_f32(dt * dt)) {}
 
-    ~particle_collection() {
-        std::free(pys); std::free(pxs);
-        std::free(xs); std::free(ys);
-        std::free(x_buffer); std::free(y_buffer);
-        std::free(rs);
-    };
+    ~particle_collection() {};
     
     void add(const particle<float32_t>& p) {
-        if (used_sz < allocated_sz) {
-            xs[used_sz] = p.x;
-            ys[used_sz] = p.y;
-            pxs[used_sz] = p.px;
-            pys[used_sz] = p.py;
-            rs[used_sz] = p.r;
-            used_sz++;
-        } 
+        xs.push_back(p.x);
+        ys.push_back(p.y);
+        pxs.push_back(p.px);
+        pys.push_back(p.py);
+        rs.push_back(p.r);
+        x_buffer.push_back(0); // fill buffer with dummy data
+        y_buffer.push_back(0);
     }
 
     /**
      * Increments new position of all particles
      */
     void step() {
-        for (size_t offset = 0; offset < used_sz; offset += 4) {
-            single_dim_verlet_update(pxs, xs, axs, offset, x_buffer);
-            single_dim_verlet_update(pys, ys, ays, offset, y_buffer);
+        for (size_t offset = 0; offset < xs.size(); offset += 4) {
+            single_dim_verlet_update(pxs.data(), xs.data(), ax_reg, offset, x_buffer.data());
+            single_dim_verlet_update(pys.data(), ys.data(), ay_reg, offset, y_buffer.data());
         }
         // update previous and current positions with buffer
-        float32_t *temp_buffer_x = pxs, *temp_buffer_y = pys;
-        pxs = xs; 
-        pys = ys;
-        xs = x_buffer; 
-        ys = y_buffer;
-        x_buffer = temp_buffer_x; 
-        y_buffer = temp_buffer_y; 
+        // (cycles around 3 buffers)
+        std::vector<float32_t> temp_buffer_x = std::move(pxs); 
+        pxs = std::move(xs); 
+        xs = std::move(x_buffer); 
+        x_buffer = std::move(temp_buffer_x); 
+
+        std::vector<float32_t> temp_buffer_y = std::move(pys);
+        pys = std::move(ys);
+        ys = std::move(y_buffer);
+        y_buffer = std::move(temp_buffer_y); 
     }
 
     /**

@@ -3,7 +3,7 @@
 #include <cassert>
 #include <iostream>
 
-namespace collision_engine {
+namespace collision_engine::simd {
 
 void initialize_collection_test() {
 
@@ -29,7 +29,7 @@ void add_particle_to_simd_collection_test() {
             assert(col.pys[i] == 4);
             assert(col.rs[i] == 5);
         }
-        assert(col.used_sz == 10);
+        assert(col.xs.size() == 10);
     }
 
     std::cout<<"2 - ok: add particle to collection"<<std::endl; 
@@ -42,10 +42,10 @@ void single_dim_verlet_update_test() {
             particle<float32_t> p(2, 2, 2, 2, 2);
             col.add(p);
         }
-        col.single_dim_verlet_update(col.pxs, col.xs, col.axs, 0, col.x_buffer);
-        col.single_dim_verlet_update(col.pxs, col.xs, col.axs, 4, col.x_buffer);
-        col.single_dim_verlet_update(col.pys, col.ys, col.ays, 0, col.y_buffer);
-        col.single_dim_verlet_update(col.pys, col.ys, col.ays, 4, col.y_buffer);
+        col.single_dim_verlet_update(col.pxs.data(), col.xs.data(), col.ax_reg, 0, col.x_buffer.data());
+        col.single_dim_verlet_update(col.pxs.data(), col.xs.data(), col.ax_reg, 4, col.x_buffer.data());
+        col.single_dim_verlet_update(col.pys.data(), col.ys.data(), col.ay_reg, 0, col.y_buffer.data());
+        col.single_dim_verlet_update(col.pys.data(), col.ys.data(), col.ay_reg, 4, col.y_buffer.data());
         
         for (int i=0;i<8;i++) { assert(col.x_buffer[i] == 2); }
         for (int i=0;i<8;i++) { assert(2.980 <= col.y_buffer[i] && col.y_buffer[i] <= 2.982); }
@@ -80,13 +80,14 @@ int main() {
     std::cout<<"Running simd_collection_test.cpp..."<<std::endl;
     std::cout<<"==================================================================="<<std::endl;
 
-    collision_engine::initialize_collection_test();
-    collision_engine::add_particle_to_simd_collection_test();
-    collision_engine::single_dim_verlet_update_test();
-    collision_engine::step_function_test();
+    collision_engine::simd::initialize_collection_test();
+    collision_engine::simd::add_particle_to_simd_collection_test();
+    collision_engine::simd::single_dim_verlet_update_test();
+    collision_engine::simd::step_function_test();
 
     std::cout<<"==================================================================="<<std::endl;
     std::cout<<"simd_collection_test - ok."<<std::endl;
 
     return 0;
 }
+
