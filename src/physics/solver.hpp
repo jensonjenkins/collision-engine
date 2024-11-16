@@ -15,7 +15,7 @@ class environment {
 private: 
     using T = typename vec_traits<VT>::element_type;
 public:
-    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 100, 100} {};
+    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 128, 128} {};
     
     void add_particle(particle<VT> *p) noexcept { _particles.push_back(p); }
     void remove_particle(particle<VT>* p) {}
@@ -57,29 +57,27 @@ public:
         }
     }
     
-    void update_particle_position() {
-        for (uint32_t i = 0; i < _grid.n_rows(); i++) {
-            for (uint32_t j = 0; j < _grid.n_cols(); j++) {
-                uint32_t cell_id = i * _grid.n_cols() + j;
+    void resolve_collisions() {
+        for (uint32_t i = 0; i < _grid.n_rows; i++) {
+            for (uint32_t j = 0; j < _grid.n_cols; j++) {
+                uint32_t cell_id = i * _grid.n_cols + j;
 
                 resolve_cell_collision(cell_id, cell_id);
                 resolve_cell_collision(cell_id, cell_id - 1);
                 resolve_cell_collision(cell_id, cell_id + 1);
 
-                resolve_cell_collision(cell_id, cell_id + _grid.n_cols());
-                resolve_cell_collision(cell_id, cell_id + _grid.n_cols() - 1);
-                resolve_cell_collision(cell_id, cell_id + _grid.n_cols() + 1);
+                resolve_cell_collision(cell_id, cell_id + _grid.n_cols);
+                resolve_cell_collision(cell_id, cell_id + _grid.n_cols - 1);
+                resolve_cell_collision(cell_id, cell_id + _grid.n_cols + 1);
 
-                resolve_cell_collision(cell_id, cell_id - _grid.n_cols());
-                resolve_cell_collision(cell_id, cell_id - _grid.n_cols() - 1);
-                resolve_cell_collision(cell_id, cell_id - _grid.n_cols() + 1);
+                resolve_cell_collision(cell_id, cell_id - _grid.n_cols);
+                resolve_cell_collision(cell_id, cell_id - _grid.n_cols - 1);
+                resolve_cell_collision(cell_id, cell_id - _grid.n_cols + 1);
             }
         }
     }
 
-    void step(T dt) {
-        _grid.populate(_particles);
-        update_particle_position();
+    void update_objects(T dt) {
         for (auto *particle : _particles) {
             particle->acceleration += _gravity;
             particle->step(dt); // update particle position and trajectory
@@ -96,6 +94,20 @@ public:
                 particle->position.set_j(_margin);
             }
         } 
+
+    }
+    
+    void step(T dt) {
+        const float32_t sub_dt = dt / static_cast<float32_t>(_sub_steps);
+        for(uint32_t i{_sub_steps}; i--;) {
+            _grid.populate(_particles);
+            resolve_collisions();
+            update_objects(sub_dt);
+        }
+    }
+
+    void set_simulation_update_rate(uint32_t frame_rate) {
+        _frame_dt = 1.f / static_cast<float32_t>(frame_rate);
     }
 
 private:
@@ -103,11 +115,13 @@ private:
     std::vector<particle<VT>*>  _particles;
 
     // Constants
-    static constexpr T  _eps                = 0.001f;
-    static constexpr T  _margin             = 4.f; 
-    static constexpr T  _response_coef      = 4.f;
-    const VT _gravity{0, 98.1f};
-    W _world_size;
+    W                           _world_size;
+    float32_t                   _frame_dt;
+    const VT                    _gravity            {0, 98.1f};
+    static constexpr T          _eps                = 0.001f;
+    static constexpr T          _margin             = 4.f; 
+    static constexpr T          _response_coef      = 4.f;
+    static constexpr uint32_t   _sub_steps          = 2;
 };
 
 } // namespace collision engine

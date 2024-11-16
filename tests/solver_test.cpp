@@ -28,7 +28,7 @@ void resolve_grid_collision_test() {
         }
     }
 
-    env.update_particle_position();   
+    env.resolve_collisions();
 
     std::cout<<"\n1 - ok: particle v grid collision"<<std::endl; 
 }

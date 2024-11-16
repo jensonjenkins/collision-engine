@@ -43,7 +43,7 @@ struct particle {
     particle() = default;
 
     void step(T dt) {
-        constexpr T VELOCITY_DAMPING = 15.f; // approximates air resistance 
+        constexpr T VELOCITY_DAMPING = 40.f; // approximates air resistance 
         const VT displacement = position - prev_position;
 
         // x(t + dt) = x(t) + v(t)dt + a(t) * t * t

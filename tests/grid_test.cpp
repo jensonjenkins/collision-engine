@@ -38,8 +38,8 @@ void populate_grid() {
 
     g.populate(particles);
 
-    assert(g.n_cols() == 10);
-    assert(g.n_rows() == 10);
+    assert(g.n_cols == 10);
+    assert(g.n_rows == 10);
     assert(g.cells().size() == 100 && "number of grid cells not 100.");
 
     for (uint32_t i = 0; i < g.cells().size(); ++i) {
