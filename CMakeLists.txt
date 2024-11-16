@@ -35,3 +35,6 @@ target_include_directories(allocator_test PRIVATE "src")
 
 add_executable(grid_test tests/grid_test.cpp)
 target_include_directories(grid_test PRIVATE "src")
+
+add_executable(simd_collection_test tests/simd_collection_test.cpp)
+target_include_directories(simd_collection_test PRIVATE "src")
