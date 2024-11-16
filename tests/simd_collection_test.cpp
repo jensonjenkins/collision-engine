@@ -8,7 +8,7 @@ namespace collision_engine::simd {
 void initialize_collection_test() {
 
     { // scope the collection to test destructor 
-        particle_collection<float32_t> col(10, 0.5);
+        particle_collection<float32_t> col(0.5);
     }
 
     std::cout<<"1 - ok: initialize collection"<<std::endl;
@@ -17,7 +17,7 @@ void initialize_collection_test() {
 void add_particle_to_simd_collection_test() {
 
     { // scope the collection to test destructor
-        particle_collection<float32_t> col(10, 0.5);
+        particle_collection<float32_t> col(0.5);
         for (int i{10};i--;) {
             particle<float32_t> p(1, 2, 3, 4, 5);
             col.add(p);
@@ -37,7 +37,7 @@ void add_particle_to_simd_collection_test() {
 
 void single_dim_verlet_update_test() {
     { // scope the collection to test destructor
-        particle_collection<float32_t> col(8, 0.1);
+        particle_collection<float32_t> col(0.1);
         for (int i{8};i--;) {
             particle<float32_t> p(2, 2, 2, 2, 2);
             col.add(p);
@@ -56,7 +56,7 @@ void single_dim_verlet_update_test() {
 
 void step_function_test() {
     { // scope the collection to test destructor
-        particle_collection<float32_t> col(8, 0.1);
+        particle_collection<float32_t> col(0.1);
         for (int i{8};i--;) {
             particle<float32_t> p(2, 2, 0, 0, 1);
             col.add(p);

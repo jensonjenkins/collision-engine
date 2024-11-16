@@ -32,7 +32,7 @@ public:
         const VT p2_p1 = p1->position - p2->position;
         const T dist_sq = (p2_p1.i() * p2_p1.i()) + (p2_p1.j() * p2_p1.j());
 
-        if(dist_sq < combined_radius * combined_radius && dist_sq > _eps) {
+        if (dist_sq < combined_radius * combined_radius) {
             const T dist = sqrt(dist_sq);
             const T delta = _response_coef * (combined_radius - dist) / combined_radius;
             const VT col_vec = (p2_p1 / dist) * delta;

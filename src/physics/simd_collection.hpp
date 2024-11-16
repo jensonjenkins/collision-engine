@@ -24,13 +24,13 @@ private:
     const float32x4_t DT_SQ_REG;
 
 public:
-    float32_t   dt;
+    float32_t dt;
     std::vector<float32_t> xs, ys, pxs, pys, rs, x_buffer, y_buffer;
 
     const float32x4_t ax_reg = vdupq_n_f32(0.f); 
     const float32x4_t ay_reg = vdupq_n_f32(98.1f); // gravity
 
-    particle_collection(size_t size, float32_t dt) : dt(dt), DT_SQ_REG(vdupq_n_f32(dt * dt)) {}
+    particle_collection(float32_t dt) : dt(dt), DT_SQ_REG(vdupq_n_f32(dt * dt)) {}
 
     ~particle_collection() {};
     
@@ -50,7 +50,9 @@ public:
     void step() {
         for (size_t offset = 0; offset < xs.size(); offset += 4) {
             single_dim_verlet_update(pxs.data(), xs.data(), ax_reg, offset, x_buffer.data());
-            single_dim_verlet_update(pys.data(), ys.data(), ay_reg, offset, y_buffer.data());
+        }
+        for (size_t offset = 0; offset < xs.size(); offset += 4) {
+            single_dim_verlet_update(pys.data(), ys.data(), ay_reg, offset, y_buffer.data()); 
         }
         // update previous and current positions with buffer
         // (cycles around 3 buffers)
