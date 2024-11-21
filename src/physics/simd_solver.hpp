@@ -38,17 +38,17 @@ public:
     void add_particle(const particle<T>& p) noexcept { _pc.add(p); }
     void remove_particle(const particle<T>& p) noexcept {};
    
-    void resolve_particle_collision_simd(uint32_t p_idx, cell<T> cell) noexcept {
+    void resolve_particle_collision_simd(uint32_t p_idx, cell<T>& cell) noexcept {
         float32_t p_dx = 0, p_dy = 0;
         float32x4_t p_x_reg = vdupq_n_f32(_pc.xs[p_idx]);
         float32x4_t p_y_reg = vdupq_n_f32(_pc.ys[p_idx]);
         float32x4_t p_r_reg = vdupq_n_f32(_pc.rs[p_idx]);
+        uint32x4_t p_id_reg = vdupq_n_u32(p_idx);
             
-        // TODO: exclude p_idx to be calculated against itself 
         for (size_t offset = 0; offset < cell.size; offset += 4) {
-            std::cout<<offset<<std::endl;
             float32x4_t xs = vld1q_f32(cell.xs.data() + offset);
             float32x4_t ys = vld1q_f32(cell.ys.data() + offset);
+
             float32x4_t dxs = vsubq_f32(p_x_reg, xs);
             float32x4_t dys = vsubq_f32(p_y_reg, ys);
 
@@ -58,18 +58,22 @@ public:
             float32x4_t radius_sum = vaddq_f32(p_r_reg, rs);
             float32x4_t radius_ratio = vdivq_f32(rs, radius_sum);
 
-            // vcltq_f32 sets ALL bits to 1 or 0 if p0 < p1, then resolves to all 1s;
-            uint32x4_t mask = vcltq_f32(dist, radius_sum); 
             float32x4_t delta = vmulq_n_f32(vdivq_f32(vsubq_f32(radius_sum, dist), radius_sum), _response_coef);
+
+            // vcltq_f32 sets ALL bits to 1 or 0 if p0 < p1, then resolves to all 1s;
+            uint32x4_t collision_mask = vcltq_f32(dist, radius_sum); 
+            uint32x4_t ids = vld1q_u32(cell.ids.data() + offset);
+            uint32x4_t neq_id_mask = vmvnq_u32(vceqq_u32(p_id_reg, ids));
+            uint32x4_t mask = vandq_u32(collision_mask, neq_id_mask);
 
             float32x4_t nx = vbslq_f32(mask, vmulq_f32(vdivq_f32(dxs, dist), delta), vdupq_n_f32(0));
             p_dx += vaddvq_f32(vmulq_f32(nx, radius_ratio));
-            xs = vaddq_f32(xs, vmulq_f32(nx, radius_ratio));
+            xs = vsubq_f32(xs, vmulq_f32(nx, radius_ratio));
             vst1q_f32(cell.xs.data() + offset, xs);
 
             float32x4_t ny = vbslq_f32(mask, vmulq_f32(vdivq_f32(dys, dist), delta), vdupq_n_f32(0)); 
             p_dy += vaddvq_f32(vmulq_f32(ny, radius_ratio));
-            ys = vaddq_f32(ys, vmulq_f32(ny, radius_ratio));
+            ys = vsubq_f32(ys, vmulq_f32(ny, radius_ratio));
             vst1q_f32(cell.ys.data() + offset, ys);
         } 
         // update collection data
