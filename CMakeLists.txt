@@ -39,3 +39,7 @@ target_include_directories(grid_test PRIVATE "src")
 add_executable(simd_collection_test tests/simd_collection_test.cpp)
 set_target_properties(simd_collection_test PROPERTIES COMPILE_FLAGS "-g")
 target_include_directories(simd_collection_test PRIVATE "src")
+
+add_executable(simd_solver_test tests/simd_solver_test.cpp)
+set_target_properties(simd_solver_test PROPERTIES COMPILE_FLAGS "-g")
+target_include_directories(simd_solver_test PRIVATE "src")

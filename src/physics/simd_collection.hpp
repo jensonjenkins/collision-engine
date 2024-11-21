@@ -89,11 +89,8 @@ public:
         // n_reg is currently x(t) + v(t)dt
         // the line below adds a(t) * dt^2 to n_reg
         n_reg = vaddq_f32(n_reg, vmulq_f32(vsubq_f32(a_reg, vmulq_f32(d_reg, VELOCITY_DAMPING_REG)), DT_SQ_REG));
-        
-        buffer[offset]      = vgetq_lane_f32(n_reg, 0);
-        buffer[offset + 1]  = vgetq_lane_f32(n_reg, 1);
-        buffer[offset + 2]  = vgetq_lane_f32(n_reg, 2);
-        buffer[offset + 3]  = vgetq_lane_f32(n_reg, 3);
+         
+        vst1q_f32(buffer + offset, n_reg); //store into buffer
     }
 
 } __attribute__((aligned(64)));
