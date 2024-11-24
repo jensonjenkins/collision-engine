@@ -7,9 +7,7 @@ namespace collision_engine::simd {
 
 template <typename T>
 struct simd_solver {
-    void step() {
-        static_cast<T*>(this)->step_impl();
-    }
+    void step() { static_cast<T*>(this)->step_impl(); }
 }; 
 
 class f32_solver : public simd_solver<f32_solver> {    
@@ -20,28 +18,31 @@ private:
     const T         _dt;
 
     static constexpr T          _eps            = 0.001f;
-    static constexpr T          _margin         = 4.f; 
     static constexpr T          _response_coef  = 4.f;
-    static constexpr uint32_t   WW              = 128;
-    static constexpr uint32_t   WH              = 128;
-    static constexpr uint32_t   C               = 32;
-    static constexpr uint32_t   R               = 32; 
     static constexpr uint32_t   _sub_steps      = 2;
+    static constexpr uint32_t   _WW             = 128;
+    static constexpr uint32_t   _WH             = 128;
+    static constexpr uint32_t   _C              = 32;
+    static constexpr uint32_t   _R              = 32; 
 
-    grid<T, WH, WW, R, C>       _grid;
+    grid<T, _WH, _WW, _R, _C>   _grid;
     particle_collection<T>      _pc __attribute__((aligned(64))); 
 
 public:
 
-    f32_solver(T dt) noexcept : _dt(dt), _sub_dt(dt / static_cast<T>(_sub_steps)), _pc(_sub_dt), _grid() {};
+    f32_solver(T dt) noexcept : _dt(dt), _sub_dt(dt / static_cast<T>(_sub_steps)), _pc(_WW, _WH, _sub_dt), _grid() {};
 
     void add_particle(const particle<T>& p) noexcept { _pc.add(p); }
     void remove_particle(const particle<T>& p) noexcept {};
 
     particle_collection<T>& pc() noexcept { return _pc; }
-    grid<T, WH, WW, R, C>& grid() noexcept { return _grid; }
+    grid<T, _WH, _WW, _R, _C>& grid() noexcept { return _grid; }
  
     /**
+     * Resolves collision for 1 particle against all particles in a given cell (identified by cell_id)
+     *
+     * @param p_idx     index of the single particle
+     * @param cell_id   index of cell to resolve collision with
      */
     void resolve_particle_collision_simd(uint32_t p_idx, uint32_t cell_id) noexcept {
         if (!_grid.is_valid_cell(cell_id)) {
@@ -72,6 +73,7 @@ public:
 
             // vcltq_f32 sets ALL bits to 1 or 0 if p0 < p1, then resolves to all 1s;
             uint32x4_t mask_lt = vcltq_f32(dist, radius_sum); 
+            // vcgtq_f32 sets ALL bits to 1 or 0 if p0 > p1, then resolves to all 1s;
             uint32x4_t mask_gt = vcgtq_f32(dist, vdupq_n_f32(0.001f)); 
             uint32x4_t ids = vld1q_u32(cell.ids.data() + offset);
             uint32x4_t neq_id_mask = vmvnq_u32(vceqq_u32(p_id_reg, ids));
@@ -100,13 +102,13 @@ public:
             resolve_particle_collision_simd(p_id, p_cell_id - 1);
             resolve_particle_collision_simd(p_id, p_cell_id + 1);
 
-            resolve_particle_collision_simd(p_id, p_cell_id + C);
-            resolve_particle_collision_simd(p_id, p_cell_id + C - 1);
-            resolve_particle_collision_simd(p_id, p_cell_id + C + 1);
+            resolve_particle_collision_simd(p_id, p_cell_id + _C);
+            resolve_particle_collision_simd(p_id, p_cell_id + _C - 1);
+            resolve_particle_collision_simd(p_id, p_cell_id + _C + 1);
 
-            resolve_particle_collision_simd(p_id, p_cell_id - C);
-            resolve_particle_collision_simd(p_id, p_cell_id - C - 1);
-            resolve_particle_collision_simd(p_id, p_cell_id - C + 1);
+            resolve_particle_collision_simd(p_id, p_cell_id - _C);
+            resolve_particle_collision_simd(p_id, p_cell_id - _C - 1);
+            resolve_particle_collision_simd(p_id, p_cell_id - _C + 1);
         }
     }
 

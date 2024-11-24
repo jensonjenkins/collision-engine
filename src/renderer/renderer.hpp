@@ -87,13 +87,9 @@ public:
         }
     }
 
-    void set_frame_limit(uint32_t frame_limit) {
-        _window.setFramerateLimit(frame_limit);
-    }
+    void set_frame_limit(uint32_t frame_limit) noexcept { _window.setFramerateLimit(frame_limit); }
    
-    bool is_running() {
-        return _window.isOpen();
-    }
+    bool is_running() const noexcept { return _window.isOpen(); }
 
     bool run() {
         sf::Event event;
