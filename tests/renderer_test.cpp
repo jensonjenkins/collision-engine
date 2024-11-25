@@ -101,7 +101,9 @@ void allocate_particle_during_simulation() {
     }
 }
 
-}
+} // namespace collision engine
+
+
 int main() {
     std::cout<<"Running renderer_test.cpp..."<<std::endl;
     

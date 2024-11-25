@@ -1,14 +1,14 @@
 #pragma once
 
 #include "common/utils.hpp"
-#include "common/constants.hpp"
-#include "physics/solver.hpp"
+#include "physics/simd_grid.hpp"
+#include "physics/simd_solver.hpp"
 #include "SFML/Window/WindowStyle.hpp"
-#include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics.hpp>
 #include <arm_neon.h>
 
-namespace collision_engine {
+namespace collision_engine::simd {
 
 struct renderer_metadata {
     std::string fps, latency, count;
@@ -35,55 +35,51 @@ struct renderer_metadata {
     }
 };
 
-/**
- * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
- */
-template <typename VT, typename W>
 class renderer {
 private:
-    using T = typename vec_traits<VT>::element_type;
+    float32_t                           _hue = 0;
+    f32_solver&                         _solver;
+    renderer_metadata                   _r_metadata;
+    sf::RenderWindow                    _window;
+    std::vector<sf::CircleShape>        _frame_particles;
+    static constexpr float32_t          _particle_color_cycle = 360;
+    particle_collection<f32_solver::T>& _pc;
+
 public:
-    explicit renderer(environment<VT, W>& env) 
-        :   _env(env), 
+    explicit renderer(f32_solver& solver) 
+        :   _solver(solver), 
             _r_metadata(),
-            _window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
-    
+            _pc(solver.pc()),
+            _window(sf::VideoMode(1280, 720), "Collision Engine", sf::Style::Close | sf::Style::Titlebar) {}
+
     /**
      * Populate the frame with particles on viewport
      */
     void init_frame() {
-        const std::vector<particle<VT>*>& particles = _env.particles();
-
-        for(particle<VT>* particle : particles) {
-            sf::CircleShape circle(particle->radius);
-            circle.setPosition(particle->position.i(), particle->position.j());
-            circle.setFillColor(collision_engine::hsv_to_rgb(_hue, 0.8f, 0.8f));
+        for(uint32_t i = 0; i < _pc.xs.size(); i++) {
+            sf::CircleShape circle(_pc.rs[i]);
+            circle.setPosition(_pc.xs[i], _pc.ys[i]);
+            circle.setFillColor(hsv_to_rgb(_hue, 0.8f, 0.8f));
             _frame_particles.push_back(circle);
             _hue += 0.05;
             if (_hue > _particle_color_cycle) _hue -= _particle_color_cycle;
         }
     }
 
-    void add_object_to_frame(particle<VT>* particle) {
-        sf::CircleShape circle(particle->radius);
-        circle.setPosition(particle->position.i(), particle->position.j());
-        circle.setFillColor(collision_engine::hsv_to_rgb(_hue, 0.8f, 0.8f));
+    void add_object_to_frame(particle<f32_solver::T> p) {
+        sf::CircleShape circle(p.r);
+        circle.setPosition(p.x, p.y);
+        circle.setFillColor(hsv_to_rgb(_hue, 0.8f, 0.8f));
         _frame_particles.push_back(circle);
         _hue += 0.05;
-        if (_hue > _particle_color_cycle) _hue -= _particle_color_cycle;
+        if (_hue > _particle_color_cycle) _hue -= _particle_color_cycle; 
     }
 
-    /**
-     * Update position of SFML particles on viewport
-     */
     void update_frame() {
-        const std::vector<particle<VT>*>& particles = _env.particles();
-
         // this may be temporary, consider updating position immediately 
         // after obj.position is updated to preserve locality
-        for (int i = 0; i < particles.size(); i++) { 
-            const auto* obj = particles[i];
-            _frame_particles[i].setPosition(obj->position.i(), obj->position.j());
+        for(uint32_t i = 0; i < _pc.xs.size(); i++) {
+            _frame_particles[i].setPosition(_pc.xs[i], _pc.ys[i]);
         }
     }
 
@@ -117,7 +113,7 @@ public:
         }
         _window.display();
     }
-    
+
     void update_metadata(float32_t fps, float32_t latency, uint32_t count) { 
         _r_metadata.fps_text.setString("fps: " + std::to_string(fps));
         _r_metadata.latency_text.setString("latency: " + std::to_string(latency) + "s");
@@ -139,14 +135,6 @@ public:
 
         _window.display();
     }
-    
-private:
-    float32_t                       _hue = 0;
-    static constexpr float32_t      _particle_color_cycle = 360;
-    environment<VT, W>&             _env;
-    std::vector<sf::CircleShape>    _frame_particles;
-    sf::RenderWindow                _window;
-    renderer_metadata               _r_metadata;
 };
 
-} // namespace collision engine
+} // namespace collision engine simd

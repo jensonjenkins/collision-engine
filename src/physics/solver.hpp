@@ -7,6 +7,7 @@
 #include <vector>
 
 namespace collision_engine {
+
 /**
  * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
@@ -15,7 +16,7 @@ class environment {
 private: 
     using T = typename vec_traits<VT>::element_type;
 public:
-    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 128, 128} {};
+    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 64, 64} {};
     
     void add_particle(particle<VT> *p) noexcept { _particles.push_back(p); }
     void remove_particle(particle<VT>* p) {}
@@ -31,7 +32,7 @@ public:
         const VT p2_p1 = p1->position - p2->position;
         const T dist_sq = (p2_p1.i() * p2_p1.i()) + (p2_p1.j() * p2_p1.j());
 
-        if(dist_sq < combined_radius * combined_radius && dist_sq > _eps) {
+        if (dist_sq < combined_radius * combined_radius) {
             const T dist = sqrt(dist_sq);
             const T delta = _response_coef * (combined_radius - dist) / combined_radius;
             const VT col_vec = (p2_p1 / dist) * delta;
@@ -94,7 +95,6 @@ public:
                 particle->position.set_j(_margin);
             }
         } 
-
     }
     
     void step(T dt) {
@@ -106,22 +106,17 @@ public:
         }
     }
 
-    void set_simulation_update_rate(uint32_t frame_rate) {
-        _frame_dt = 1.f / static_cast<float32_t>(frame_rate);
-    }
-
 private:
     grid<particle<VT>, W>       _grid;
     std::vector<particle<VT>*>  _particles;
 
     // Constants
     W                           _world_size;
-    float32_t                   _frame_dt;
     const VT                    _gravity            {0, 98.1f};
     static constexpr T          _eps                = 0.001f;
     static constexpr T          _margin             = 4.f; 
     static constexpr T          _response_coef      = 4.f;
-    static constexpr uint32_t   _sub_steps          = 2;
+    static constexpr uint32_t   _sub_steps          = 4;
 };
 
 } // namespace collision engine
