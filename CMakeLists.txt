@@ -43,3 +43,8 @@ target_include_directories(simd_collection_test PRIVATE "src")
 add_executable(simd_solver_test tests/simd_solver_test.cpp)
 set_target_properties(simd_solver_test PROPERTIES COMPILE_FLAGS "-g")
 target_include_directories(simd_solver_test PRIVATE "src")
+
+add_executable(simd_renderer_test tests/simd_renderer_test.cpp)
+set_target_properties(simd_renderer_test PROPERTIES COMPILE_FLAGS "-g")
+target_include_directories(simd_renderer_test PRIVATE "src")
+target_link_libraries(simd_renderer_test PRIVATE sfml-graphics)

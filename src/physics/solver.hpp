@@ -16,7 +16,7 @@ class environment {
 private: 
     using T = typename vec_traits<VT>::element_type;
 public:
-    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 128, 128} {};
+    environment(W world_size) noexcept : _world_size(world_size), _grid{world_size, 64, 64} {};
     
     void add_particle(particle<VT> *p) noexcept { _particles.push_back(p); }
     void remove_particle(particle<VT>* p) {}

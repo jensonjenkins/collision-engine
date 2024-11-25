@@ -1,4 +1,4 @@
-#include "SFML/Graphics/Color.hpp"
+#include <SFML/Graphics/Color.hpp>
 
 namespace collision_engine {
    

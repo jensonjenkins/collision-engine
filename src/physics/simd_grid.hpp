@@ -3,7 +3,6 @@
 #include "simd_collection.hpp"
 #include "arm_neon.h"
 #include <cstdint>
-#include <iostream>
 #include <vector>
 
 namespace collision_engine::simd {
