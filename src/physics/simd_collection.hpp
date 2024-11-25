@@ -1,3 +1,4 @@
+#include "common/allocator.hpp"
 #include "arm_neon.h"
 #include <vector>
 #include <cstdlib>
@@ -31,7 +32,13 @@ private:
 
 public:
     float32_t dt;
-    std::vector<float32_t> xs, ys, pxs, pys, rs, x_buffer, y_buffer;
+    std::vector<float32_t, aligned_allocator<float32_t, 16>> xs; 
+    std::vector<float32_t, aligned_allocator<float32_t, 16>> ys; 
+    std::vector<float32_t, aligned_allocator<float32_t, 16>> pxs; 
+    std::vector<float32_t, aligned_allocator<float32_t, 16>> pys; 
+    std::vector<float32_t, aligned_allocator<float32_t, 16>> x_buffer; 
+    std::vector<float32_t, aligned_allocator<float32_t, 16>> y_buffer; 
+    std::vector<float32_t, aligned_allocator<float32_t, 16>> rs; 
 
     const float32x4_t ax_reg = vdupq_n_f32(0.f); 
     const float32x4_t ay_reg = vdupq_n_f32(98.1f); // gravity
@@ -62,12 +69,12 @@ public:
         }
         // update previous and current positions with buffer
         // (cycles around 3 buffers)
-        std::vector<float32_t> temp_buffer_x = std::move(pxs); 
+        std::vector<float32_t, aligned_allocator<float32_t, 16>> temp_buffer_x = std::move(pxs); 
         pxs = std::move(xs); 
         xs = std::move(x_buffer); 
         x_buffer = std::move(temp_buffer_x); 
 
-        std::vector<float32_t> temp_buffer_y = std::move(pys);
+        std::vector<float32_t, aligned_allocator<float32_t, 16>> temp_buffer_y = std::move(pys);
         pys = std::move(ys);
         ys = std::move(y_buffer);
         y_buffer = std::move(temp_buffer_y); 

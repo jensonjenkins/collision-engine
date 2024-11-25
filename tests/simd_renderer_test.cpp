@@ -16,18 +16,18 @@ void allocate_particle_before_simulation() {
     sf::Clock clock;
     float32_t radius        = 2;
     float32_t start_i       = 10;
-    float32_t prev_i        = 8;
+    float32_t prev_i        = 9.5;
     float32_t fps           = 0;
     int count               = 0;
     r.init_frame();
     while(r.run()) {
         if (count < n_particles) {
-            for (int i{5};i--;) {
-                particle<float32_t> p(start_i, 50 - 5 * i, prev_i, 50 - 5 * i, 2);
+            for (int i{4};i--;) {
+                particle<float32_t> p(start_i, 50 - 5 * i, prev_i, 50 - 5 * i, radius);
                 solver.add_particle(p);
                 r.add_object_to_frame(p); 
             }
-            count += 5;
+            count += 4;
         }
         solver.step();
         r.update_frame();

@@ -20,14 +20,14 @@ private:
 
     static constexpr T          _eps            = 0.001f;
     static constexpr T          _response_coef  = 4.f;
-    static constexpr uint32_t   _sub_steps      = 2;
+    static constexpr uint32_t   _sub_steps      = 6;
     static constexpr uint32_t   _WW             = 512;
     static constexpr uint32_t   _WH             = 512;
     static constexpr uint32_t   _C              = 64;
     static constexpr uint32_t   _R              = 64; 
 
     grid<T, _WH, _WW, _R, _C>   _grid;
-    particle_collection<T>      _pc __attribute__((aligned(64))); 
+    particle_collection<T>      _pc __attribute__((aligned(16))); 
 
 public:
     f32_solver(T dt) noexcept : _dt(dt), _sub_dt(dt / static_cast<T>(_sub_steps)), _pc(_WW, _WH, _sub_dt), _grid() {};

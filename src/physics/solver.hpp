@@ -116,7 +116,7 @@ private:
     static constexpr T          _eps                = 0.001f;
     static constexpr T          _margin             = 4.f; 
     static constexpr T          _response_coef      = 4.f;
-    static constexpr uint32_t   _sub_steps          = 2;
+    static constexpr uint32_t   _sub_steps          = 4;
 };
 
 } // namespace collision engine

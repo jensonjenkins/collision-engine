@@ -22,8 +22,8 @@ public:
      * Deallocates memory given an address
      * @param ptr pointer to object to deallocate
      */
-    void deallocate(void* ptr) {
-        return static_cast<AllocatorImpl*>(this)->deallocate_impl(ptr);
+    void deallocate(void* ptr, size_t size) {
+        return static_cast<AllocatorImpl*>(this)->deallocate_impl(ptr, size);
     }
     /**
      * Wipes current buffer clean, provides a newly allocated buffer with size _allocated_buffer_size
@@ -67,7 +67,7 @@ public:
 
         return aligned_ptr;
     }
-    void deallocate_impl(void* ptr) = delete;
+    void deallocate_impl(void* ptr, std::size_t) = delete;
     void reset_impl() {
         std::free(_buffer_start_ptr);
         _buffer_start_ptr = std::malloc(_allocated_buffer_size);
@@ -85,8 +85,35 @@ private:
     void* _buffer_start_ptr{nullptr};
 };
 
-class pool_allocator : allocator<pool_allocator> {
-    
+template <typename T, std::size_t Alignment>
+struct aligned_allocator {
+    using value_type = T;
+
+    template <typename U>
+    struct rebind {
+        using other = aligned_allocator<U, Alignment>;
+    };
+
+    aligned_allocator() noexcept = default;
+
+    template <typename U>
+    aligned_allocator(const aligned_allocator<U, Alignment>&) noexcept {}
+
+    T* allocate(std::size_t n) {
+        void* ptr = nullptr;
+        if (posix_memalign(&ptr, Alignment, n * sizeof(T)) != 0) {
+            throw std::bad_alloc();
+        }
+        return reinterpret_cast<T*>(ptr);
+    }
+
+    void deallocate(T* ptr, std::size_t) noexcept { free(ptr); }
+
+    template <typename U>
+    bool operator==(const aligned_allocator<U, Alignment>&) const noexcept { return true; }
+
+    template <typename U>
+    bool operator!=(const aligned_allocator<U, Alignment>&) const noexcept { return false; }
 };
 
 } // namespace collision engine 
