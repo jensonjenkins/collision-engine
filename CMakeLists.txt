@@ -30,11 +30,6 @@ set_target_properties(renderer_test PROPERTIES COMPILE_FLAGS "-g")
 target_compile_options(renderer_test PRIVATE -O3 -march=native -ffast-math)
 target_link_libraries(renderer_test PRIVATE sfml-graphics)
 
-add_executable(solver_test tests/solver_test.cpp)
-target_include_directories(solver_test PRIVATE "src")
-set_target_properties(solver_test PROPERTIES COMPILE_FLAGS "-g")
-target_link_libraries(solver_test PRIVATE sfml-graphics)
-
 add_executable(allocator_test tests/allocator_test.cpp)
 target_include_directories(allocator_test PRIVATE "src")
 

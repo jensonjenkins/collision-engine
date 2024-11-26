@@ -26,10 +26,16 @@ private:
  * @tparam PT (Particle Type) type of object the cell contains
  */
 template <typename PT, typename W>
-struct grid {
+class grid {
+private:
+    const uint32_t          _cell_width;    // pixel width of each cell
+    const uint32_t          _cell_height;   // pixel height of each cell
+    std::vector<cell<PT*>>  _cells;
 
-    const uint32_t n_rows;        // no. of rows on the grid
-    const uint32_t n_cols;        // no. of cols on the grid
+public:
+    const uint32_t n_rows;  // no. of rows on the grid
+    const uint32_t n_cols;  // no. of cols on the grid
+    uint32_t cell_count;
                                             
     /**
      * @param world_size world size of vec type W
@@ -39,6 +45,7 @@ struct grid {
     grid(W world_size, uint32_t n_rows, uint32_t n_cols) noexcept 
         : n_rows(n_rows), n_cols(n_cols), _cell_width(world_size.i() / n_cols), _cell_height(world_size.j()/ n_rows) { 
         _cells.assign(n_rows * n_cols, cell<PT*>());
+        cell_count = n_cols * n_rows;
     }
 
     /**
@@ -70,11 +77,6 @@ struct grid {
     }
 
     std::vector<cell<PT*>>& cells() noexcept { return _cells; }
-
-private:
-    const uint32_t          _cell_width;    // pixel width of each cell
-    const uint32_t          _cell_height;   // pixel height of each cell
-    std::vector<cell<PT*>>  _cells;
 };
 
 } // namespace collision_engine

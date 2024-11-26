@@ -33,17 +33,17 @@ struct renderer_metadata {
         fps_text.setFont(font);
         fps_text.setCharacterSize(12);
         fps_text.setFillColor(sf::Color::White);
-        fps_text.setPosition(520.f, 10.f);
+        fps_text.setPosition(1030.f, 10.f);
 
         latency_text.setFont(font);
         latency_text.setCharacterSize(12);
         latency_text.setFillColor(sf::Color::White);
-        latency_text.setPosition(520.f, 23.f);
+        latency_text.setPosition(1030.f, 23.f);
 
         particle_count.setFont(font);
         particle_count.setCharacterSize(12);
         particle_count.setFillColor(sf::Color::White);
-        particle_count.setPosition(520.f, 36.f); 
+        particle_count.setPosition(1030.f, 36.f); 
     }
 };
 
