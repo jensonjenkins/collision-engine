@@ -5,7 +5,6 @@
 #include "grid.hpp"
 #include <arm_neon.h>
 #include <cstdint>
-#include <iostream>
 #include <vector>
 
 namespace collision_engine {
@@ -35,6 +34,7 @@ public:
     
     void add_particle(particle<VT> *p) noexcept { _particles.push_back(p); }
     void remove_particle(particle<VT>* p) {}
+    void stop() { _tp.stop(); }
     
     const std::vector<particle<VT>*>& particles() const noexcept { return _particles; }
     

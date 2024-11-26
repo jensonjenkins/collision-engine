@@ -71,6 +71,7 @@ public:
         while(_window.pollEvent(event)){
             switch (event.type) {
             case sf::Event::Closed:
+                _env.stop();
                 _window.close();
                 break;
             default:

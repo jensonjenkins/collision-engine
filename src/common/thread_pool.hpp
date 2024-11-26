@@ -128,6 +128,10 @@ public:
     void submit(FunctionType&& f) { _queue.push(std::forward<FunctionType>(f)); }
 
     void wait_for_tasks() const { _queue.wait_task_completion(); }
+    void stop() { 
+        _done = true;
+        _joiner.join_all_threads();
+    }
 };
 
 } // namespace collision_engine
