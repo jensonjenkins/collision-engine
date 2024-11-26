@@ -24,10 +24,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(SFML)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(main src/main.cpp)
-target_include_directories(main PRIVATE "src")
-target_link_libraries(main PRIVATE sfml-graphics)
-
 add_executable(renderer_test tests/renderer_test.cpp)
 target_include_directories(renderer_test PRIVATE "src")
 set_target_properties(renderer_test PROPERTIES COMPILE_FLAGS "-g")

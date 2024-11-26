@@ -19,8 +19,8 @@ private:
     const T         _dt;
 
     static constexpr T          _eps            = 0.001f;
-    static constexpr T          _response_coef  = 4.f;
-    static constexpr uint32_t   _sub_steps      = 6;
+    static constexpr T          _response_coef  = 3.f;
+    static constexpr uint32_t   _sub_steps      = 4;
     static constexpr uint32_t   _WW             = 512;
     static constexpr uint32_t   _WH             = 512;
     static constexpr uint32_t   _C              = 64;

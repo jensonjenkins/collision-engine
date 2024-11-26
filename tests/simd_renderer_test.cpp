@@ -14,11 +14,11 @@ void allocate_particle_before_simulation() {
     r.set_frame_limit(fps_cap);
 
     sf::Clock clock;
-    float32_t radius        = 2;
-    float32_t start_i       = 10;
-    float32_t prev_i        = 9.5;
-    float32_t fps           = 0;
-    int count               = 0;
+    float32_t radius    = 2;
+    float32_t start_i   = 10;
+    float32_t prev_i    = 9.5;
+    float32_t fps       = 0;
+    int count           = 0;
     r.init_frame();
     while(r.run()) {
         if (count < n_particles) {
@@ -41,7 +41,7 @@ void allocate_particle_before_simulation() {
     }  
 }
 
-}
+} // namespace collision engine simd
 
 int main() {
     std::cout<<"Running simd_renderer_test.cpp..."<<std::endl;

@@ -10,31 +10,6 @@
 
 namespace collision_engine {
 
-struct renderer_metadata {
-    std::string fps, latency, count;
-    sf::Text fps_text, latency_text, particle_count;
-    sf::Font font;
-
-    renderer_metadata() {
-        font.loadFromFile("assets/tuffy.ttf");
-
-        fps_text.setFont(font);
-        fps_text.setCharacterSize(12);
-        fps_text.setFillColor(sf::Color::White);
-        fps_text.setPosition(610.f, 10.f);
-
-        latency_text.setFont(font);
-        latency_text.setCharacterSize(12);
-        latency_text.setFillColor(sf::Color::White);
-        latency_text.setPosition(610.f, 22.f);
-
-        particle_count.setFont(font);
-        particle_count.setCharacterSize(12);
-        particle_count.setFillColor(sf::Color::White);
-        particle_count.setPosition(610.f, 36.f); 
-    }
-};
-
 /**
  * @tparam VT vector wrapper defined in particle.hpp (e.g. vec2, vec3)
  */
